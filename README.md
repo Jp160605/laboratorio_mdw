@@ -4,80 +4,27 @@
 
 ---
 
-## 1. Resumen de Arquitectura y Stack del Proyecto Completo
+## 1. Resumen de Arquitectura y Stack
 
-El sistema está orquestado en **4 contenedores independientes** mediante Docker Compose, cada uno con cuota asignada de **1 GB de RAM**:
+El sistema está orquestado en **4 contenedores independientes** mediante Docker Compose:
 
 ```mermaid
 flowchart TD
-    subgraph Browser ["Navegador Web (Host: localhost)"]
-        UI["Interfaz de Usuario (Next.js 14)"]
-        Grid["Cuadrícula de Calendario (08:00 - 20:00)"]
-        Sim["Simulador de Concurrencia (Promise.all)"]
-        WsClient["Socket.io Client"]
-        UI --> Grid
-        UI --> Sim
-        UI --> WsClient
+    subgraph Host ["Máquina Local / Navegador"]
+        Browser["Navegador Web (http://localhost:3000)"]
     end
 
-    subgraph DockerCompose ["Docker Compose (Red: reservas-net - 1 GB RAM c/u)"]
-        subgraph FrontContainer ["Contenedor: reservas_frontend (Puerto 3000)"]
-            NextServer["Servidor SSR Next.js (Node 20 Alpine)"]
-            ApiClient["API Service (Fetch + JWT Headers)"]
-            NextServer --> ApiClient
-        end
-
-        subgraph BackContainer ["Contenedor: reservas_backend (Puerto 4000)"]
-            Express["Servidor Express + TypeScript"]
-            AuthMod["Auth Router (bcrypt + JWT)"]
-            SalasMod["Salas Router (Algoritmo Costo 'Mejor Sala')"]
-            ReservasMod["Reservas Router (Control Transaccional ACID)"]
-            WsServer["Servidor Socket.io"]
-            BullWorker["BullMQ Worker (Procesador Asíncrono de Correos)"]
-
-            Express --> AuthMod
-            Express --> SalasMod
-            Express --> ReservasMod
-            Express --> WsServer
-            Express --> BullWorker
-        end
-
-        subgraph PostgresContainer ["Contenedor: reservas_postgres (Puerto 5432)"]
-            PG[("PostgreSQL 16 Alpine\nTablas: usuarios, salas, reservas")]
-            LockEngine["Bloqueo Optimista: UPDATE salas SET version=version+1"]
-            UniqueIdx["Índice Parcial Único: idx_reserva_unica_activa"]
-            PG --- LockEngine
-            PG --- UniqueIdx
-        end
-
-        subgraph RedisContainer ["Contenedor: reservas_redis (Puerto 6379)"]
-            RedisCache[("Redis 7 Alpine\nCaché de Disponibilidad (TTL: 600s)")]
-            RedisQueue[("Colas BullMQ: email-notifications\nJobs: Inmediato y Delay 1h antes")]
-        end
+    subgraph DockerNet ["Red Docker: reservas-net"]
+        Frontend["reservas_frontend (Next.js 14 + TailwindCSS)\nPuerto: 3000"]
+        Backend["reservas_backend (Express + TypeScript + Socket.io)\nPuerto: 4000"]
+        Postgres[("reservas_postgres (PostgreSQL 16)\nPuerto: 5432\nDDL & Seeds en SQL Puro")]
+        RedisDB[("reservas_redis (Redis 7)\nPuerto: 6379\nCaché & BullMQ")]
     end
 
-    subgraph Notificaciones ["Notificaciones Externas"]
-        SMTP["Servidor SMTP (Nodemailer)"]
-    end
-
-    %% Conexiones
-    Browser <-->|HTTP :3000| FrontContainer
-    ApiClient -->|REST API :4000| Express
-    WsClient <-->|WebSockets Bidireccional :4000| WsServer
-
-    ReservasMod -->|1. BEGIN / SQL Puro| PostgresContainer
-    ReservasMod -->|2. rowCount: 1 (Commit) / 0 (Rollback 409)| PostgresContainer
-    ReservasMod -->|3. Invalida clave disponibilidad| RedisCache
-    ReservasMod -->|4. Encola confirmación y recordatorio| RedisQueue
-    ReservasMod -->|5. Emite evento calendario_actualizado| WsServer
-    WsServer -.->|Broadcast en vivo| WsClient
-
-    SalasMod <-->|Lectura rápida / Cache Hit| RedisCache
-    SalasMod <-->|Cache Miss / Consulta SQL| PG
-    AuthMod <-->|Verificación de credenciales| PG
-
-    RedisQueue -->|Despacha trabajos| BullWorker
-    BullWorker -->|Envío de emails| SMTP
+    Browser -->|HTTP / Interfaz| Frontend
+    Frontend -->|REST API / WebSockets| Backend
+    Backend -->|Transacciones ACID (BEGIN / COMMIT / ROLLBACK)| Postgres
+    Backend -->|Caché de Disponibilidad & Encolado BullMQ| RedisDB
 ```
 
 ### Tecnologías Empleadas
@@ -89,45 +36,7 @@ flowchart TD
 
 ---
 
-## 2. Modelo de Base de Datos Relacional (PostgreSQL)
-
-```mermaid
-erDiagram
-    usuarios ||--o{ reservas : "realiza (1:N)"
-    salas ||--o{ reservas : "aloja (1:N)"
-
-    usuarios {
-        int id PK "SERIAL - Identificador único"
-        string nombre "VARCHAR(100) - Nombre completo"
-        string email UK "VARCHAR(150) - Correo único (login)"
-        string password_hash "TEXT - Hash seguro (bcrypt)"
-        timestamp creado_en "TIMESTAMP - Fecha de registro"
-    }
-
-    salas {
-        int id PK "SERIAL - Identificador único"
-        string nombre "VARCHAR(100) - Nombre del espacio o lab"
-        int capacidad "INT - Aforo máximo de personas"
-        string ubicacion "VARCHAR(100) - Edificio o piso"
-        int version "INT DEFAULT 1 - Control de Bloqueo Optimista (RF-04)"
-    }
-
-    reservas {
-        int id PK "SERIAL - Identificador único"
-        int sala_id FK "INT REFERENCES salas(id) ON DELETE CASCADE"
-        int usuario_id FK "INT REFERENCES usuarios(id) ON DELETE CASCADE"
-        date fecha "DATE - Fecha de la reserva (YYYY-MM-DD)"
-        int hora_inicio "INT - Bloque de inicio (8 a 20)"
-        int hora_fin "INT - Bloque de fin (hora_inicio + 1)"
-        string estado "VARCHAR(20) - CONFIRMADA o CANCELADA"
-        int version_sala_aplicada "INT - Versión de sala al momento del commit"
-        timestamp creado_en "TIMESTAMP - Momento del registro"
-    }
-```
-
----
-
-## 3. Requerimientos Funcionales y Demostración
+## 2. Requerimientos Funcionales y Demostración
 
 | Requerimiento | Descripción | Mecanismo Técnico |
 | :--- | :--- | :--- |
