@@ -1,0 +1,2 @@
+# Directorio para Skills del Agente Antigravity
+# Cada skill debe ubicarse en una subcarpeta: .agents/skills/<nombre-skill>/SKILL.md

@@ -1,0 +1,51 @@
+# Node.js dependencies
+node_modules/
+.pnp
+.pnp.js
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Next.js build output
+.next/
+out/
+
+# TypeScript & build artifacts
+dist/
+build/
+*.tsbuildinfo
+
+# Environment variables
+.env
+.env*.local
+!.env.example
+
+# Testing and coverage
+coverage/
+.nyc_output/
+
+# Docker & Database persistence (local bind mounts or dumps)
+postgres_data/
+redis_data/
+*.sql.bak
+dump.rdb
+
+# Operating System files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs & Editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Temporary / Log files
+*.log
+logs/
