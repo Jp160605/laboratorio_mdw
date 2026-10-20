@@ -3,11 +3,11 @@
 -- ==============================================================
 
 -- Usuarios de prueba iniciales (password: 'password123')
--- Hash bcrypt de 10 rondas para 'password123': $2b$10$EpRnTzVlqHNP0.fUbXUwSOyuiXe/QLSUG6xNekdHgTGmrpHEfIoxm
+-- Hash bcrypt de 10 rondas para 'password123': $2b$10$7mWXXzEGOSH.Yto9pqURd.3C5vP3ZT6l8NLVtWiVVFN0WTwqlzUjK
 INSERT INTO usuarios (nombre, email, password_hash) VALUES
-('Juan Pérez (Alumno A)', 'alumnoA@universidad.edu', '$2b$10$EpRnTzVlqHNP0.fUbXUwSOyuiXe/QLSUG6xNekdHgTGmrpHEfIoxm'),
-('María López (Alumno B)', 'alumnoB@universidad.edu', '$2b$10$EpRnTzVlqHNP0.fUbXUwSOyuiXe/QLSUG6xNekdHgTGmrpHEfIoxm'),
-('Carlos Gómez (Profesor)', 'profesor@universidad.edu', '$2b$10$EpRnTzVlqHNP0.fUbXUwSOyuiXe/QLSUG6xNekdHgTGmrpHEfIoxm');
+('Juan Pérez (Alumno A)', 'alumnoA@universidad.edu', '$2b$10$7mWXXzEGOSH.Yto9pqURd.3C5vP3ZT6l8NLVtWiVVFN0WTwqlzUjK'),
+('María López (Alumno B)', 'alumnoB@universidad.edu', '$2b$10$7mWXXzEGOSH.Yto9pqURd.3C5vP3ZT6l8NLVtWiVVFN0WTwqlzUjK'),
+('Carlos Gómez (Profesor)', 'profesor@universidad.edu', '$2b$10$7mWXXzEGOSH.Yto9pqURd.3C5vP3ZT6l8NLVtWiVVFN0WTwqlzUjK');
 
 -- Salas con diversas capacidades y versiones iniciales (version = 1)
 INSERT INTO salas (nombre, capacidad, ubicacion, version) VALUES
