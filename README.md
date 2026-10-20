@@ -36,7 +36,45 @@ flowchart TD
 
 ---
 
-## 2. Requerimientos Funcionales y Demostración
+## 2. Modelo de Base de Datos Relacional (PostgreSQL)
+
+```mermaid
+erDiagram
+    usuarios ||--o{ reservas : "realiza (1:N)"
+    salas ||--o{ reservas : "aloja (1:N)"
+
+    usuarios {
+        int id PK "SERIAL - Identificador único"
+        string nombre "VARCHAR(100) - Nombre completo"
+        string email UK "VARCHAR(150) - Correo único (login)"
+        string password_hash "TEXT - Hash seguro (bcrypt)"
+        timestamp creado_en "TIMESTAMP - Fecha de registro"
+    }
+
+    salas {
+        int id PK "SERIAL - Identificador único"
+        string nombre "VARCHAR(100) - Nombre del espacio o lab"
+        int capacidad "INT - Aforo máximo de personas"
+        string ubicacion "VARCHAR(100) - Edificio o piso"
+        int version "INT DEFAULT 1 - Control de Bloqueo Optimista (RF-04)"
+    }
+
+    reservas {
+        int id PK "SERIAL - Identificador único"
+        int sala_id FK "INT REFERENCES salas(id) ON DELETE CASCADE"
+        int usuario_id FK "INT REFERENCES usuarios(id) ON DELETE CASCADE"
+        date fecha "DATE - Fecha de la reserva (YYYY-MM-DD)"
+        int hora_inicio "INT - Bloque de inicio (8 a 20)"
+        int hora_fin "INT - Bloque de fin (hora_inicio + 1)"
+        string estado "VARCHAR(20) - CONFIRMADA o CANCELADA"
+        int version_sala_aplicada "INT - Versión de sala al momento del commit"
+        timestamp creado_en "TIMESTAMP - Momento del registro"
+    }
+```
+
+---
+
+## 3. Requerimientos Funcionales y Demostración
 
 | Requerimiento | Descripción | Mecanismo Técnico |
 | :--- | :--- | :--- |
