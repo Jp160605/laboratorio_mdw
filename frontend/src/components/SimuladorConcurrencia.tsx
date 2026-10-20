@@ -2,7 +2,10 @@
 
 import React, { useState } from 'react';
 import { Sala, ResultadoConcurrencia } from '@/types';
-import { Zap, AlertCircle, CheckCircle, ShieldAlert } from 'lucide-react';
+import PixelIcon from '@/components/PixelIcon';
+import PixelButton from '@/components/PixelButton';
+import PixelBadge from '@/components/PixelBadge';
+import RetroWindow from '@/components/RetroWindow';
 
 interface SimuladorConcurrenciaProps {
   salas: Sala[];
@@ -47,44 +50,59 @@ export default function SimuladorConcurrencia({
 
   return (
     <section className="space-y-4">
-      {/* Banner de Contexto Académico */}
-      <div className="rounded border border-amber-300 bg-amber-50 p-4 text-amber-900">
-        <div className="flex items-center gap-2">
-          <Zap className="h-5 w-5 text-amber-700" />
-          <h2 className="text-base font-bold">
-            Simulador de Concurrencia y Bloqueo Optimista (Demostración de Evaluación)
-          </h2>
-        </div>
-        <p className="mt-1 text-xs text-amber-800">
-          Demuestra la prevención de <em>overbooking</em> enviando dos peticiones HTTP concurrentes con <code>Promise.all</code> en el mismo milisegundo hacia el mismo espacio y bloque, ambas portando el mismo valor de <code>version</code>.
-        </p>
-      </div>
-
-      {/* Controles de la Simulación */}
-      <div className="rounded border border-gray-300 bg-white p-4">
-        <h3 className="text-xs font-semibold uppercase text-gray-500">Parámetros del Conflicto</h3>
-        <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
+      {/* Banner de Contexto de Evaluación */}
+      <RetroWindow
+        title="BENCHMARK_CONCURRENCIA.EXE"
+        badge="STRESS_TEST"
+        headerColor="pink"
+      >
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <label className="block text-xs font-semibold text-gray-700">Espacio / Sala</label>
+            <h2 className="font-pixel text-base font-bold uppercase tracking-wide text-neo-dark">
+              Simulador de Carrera Crítica: 2 Peticiones Simultáneas
+            </h2>
+            <p className="font-body text-xs text-neo-dark/80">
+              Dispara dos peticiones HTTP con <code className="bg-neo-yellow px-1 py-0.5 border border-neo-dark font-pixel font-bold">Promise.all</code> en el mismo milisegundo hacia el mismo bloque con idéntica versión.
+            </p>
+          </div>
+          <PixelBadge variant="pink" withDot>
+            ANTI-OVERBOOKING
+          </PixelBadge>
+        </div>
+      </RetroWindow>
+
+      {/* Panel de Control de Colisión */}
+      <RetroWindow
+        title="PANEL_COLISION.CFG"
+        badge="SETUP"
+        headerColor="cream"
+      >
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          <div>
+            <label className="block font-pixel text-xs font-bold uppercase text-neo-dark">
+              {'//'} Espacio Objetivo
+            </label>
             <select
               value={salaId}
               onChange={(e) => setSalaId(Number(e.target.value))}
-              className="mt-1 w-full rounded border border-gray-300 p-2 text-xs font-medium focus:border-black focus:outline-none"
+              className="mt-1 w-full border-3 border-neo-dark bg-transparent p-2.5 font-pixel text-xs font-bold text-neo-dark focus:bg-neo-yellow focus:outline-none"
             >
               {salas.map((s) => (
                 <option key={s.id} value={s.id}>
-                  {s.nombre} (Versión actual: v{s.version})
+                  {s.nombre} [v.{s.version}]
                 </option>
               ))}
             </select>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-gray-700">Bloque Horario</label>
+            <label className="block font-pixel text-xs font-bold uppercase text-neo-dark">
+              {'//'} Bloque Horario
+            </label>
             <select
               value={hora}
               onChange={(e) => setHora(Number(e.target.value))}
-              className="mt-1 w-full rounded border border-gray-300 p-2 text-xs font-medium focus:border-black focus:outline-none"
+              className="mt-1 w-full border-3 border-neo-dark bg-transparent p-2.5 font-pixel text-xs font-bold text-neo-dark focus:bg-neo-yellow focus:outline-none"
             >
               {Array.from({ length: 13 }, (_, i) => i + 8).map((h) => (
                 <option key={h} value={h}>
@@ -95,134 +113,149 @@ export default function SimuladorConcurrencia({
           </div>
 
           <div className="flex items-end">
-            <button
+            <PixelButton
               type="button"
+              variant="danger"
+              size="md"
               disabled={ejecutando}
               onClick={handleSimular}
-              className="flex w-full items-center justify-center gap-2 rounded border border-black bg-black py-2.5 text-xs font-bold text-white transition hover:bg-gray-800 disabled:bg-gray-400"
+              className="w-full"
+              icon={<PixelIcon name="zap" size={16} />}
             >
-              <Zap className={`h-4 w-4 ${ejecutando ? 'animate-spin' : ''}`} />
-              <span>{ejecutando ? 'Disparando Promise.all...' : '⚡ Simular Colisión de 2 Usuarios'}</span>
-            </button>
+              {ejecutando ? 'Ejecutando...' : '⚡ Disparar Colisión'}
+            </PixelButton>
           </div>
         </div>
 
-        <div className="mt-3 rounded bg-gray-100 p-2 text-[11px] font-mono text-gray-700">
-          Query SQL ejecutada por el backend en la transacción: <br />
-          <code>
-            UPDATE salas SET version = version + 1 WHERE id = {salaId} AND version ={' '}
-            {salaSeleccionada?.version || 1}
-          </code>
+        {/* Snippet SQL Neobrutalista */}
+        <div className="mt-4 border-2 border-neo-dark bg-neo-dark p-3 font-pixel text-xs text-neo-green">
+          <span className="text-neo-yellow">{'//'} Transacción SQL de Bloqueo Optimista:</span>
+          <pre className="mt-1 overflow-x-auto text-[11px] whitespace-pre-wrap">
+{`BEGIN;
+UPDATE salas SET version = version + 1 WHERE id = ${salaId} AND version = ${salaSeleccionada?.version || 1};
+-- Si rowCount === 0 => ROLLBACK && HTTP 409 Conflict
+-- Si rowCount === 1 => INSERT INTO reservas ... COMMIT && HTTP 201 Created`}
+          </pre>
         </div>
-      </div>
+      </RetroWindow>
 
-      {/* Resultados de Ambas Peticiones Lado a Lado */}
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        {/* Resultado Petición A */}
-        <div
-          className={`rounded border p-4 transition ${
+      {/* Resultados Lado a Lado (Arcade VS Screen) */}
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        {/* Petición A */}
+        <RetroWindow
+          title="HILO_01: USUARIO_A"
+          badge={resultadoA ? `HTTP_${resultadoA.status}` : 'READY'}
+          headerColor={
             resultadoA
               ? resultadoA.exito
-                ? 'border-green-400 bg-green-50/40'
-                : 'border-red-400 bg-red-50/40'
-              : 'border-gray-300 bg-white'
-          }`}
+                ? 'green'
+                : 'pink'
+              : 'blue'
+          }
         >
-          <div className="flex items-center justify-between border-b pb-2">
-            <h4 className="font-bold text-xs text-gray-800 uppercase">
-              Petición #1 (Usuario A)
-            </h4>
-            {resultadoA && (
-              <span
-                className={`font-mono text-xs font-bold px-2 py-0.5 rounded ${
-                  resultadoA.status === 201
-                    ? 'bg-green-600 text-white'
-                    : 'bg-red-600 text-white'
+          {resultadoA ? (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between border-b-2 border-neo-dark pb-2">
+                <PixelBadge
+                  variant={resultadoA.exito ? 'green' : 'pink'}
+                  size="md"
+                  withDot
+                >
+                  {resultadoA.exito ? '201 CREATED' : '409 CONFLICT'}
+                </PixelBadge>
+                <span className="font-pixel text-[10px] text-neo-dark/70 font-bold">
+                  {resultadoA.timestamp}
+                </span>
+              </div>
+
+              <div
+                className={`border-2 border-neo-dark p-3 ${
+                  resultadoA.exito
+                    ? 'bg-neo-green/20 text-neo-dark'
+                    : 'bg-neo-pink/20 text-neo-dark'
                 }`}
               >
-                HTTP {resultadoA.status}
-              </span>
-            )}
-          </div>
-
-          {resultadoA ? (
-            <div className="mt-3 space-y-2 text-xs">
-              <div className="flex items-center gap-2">
-                {resultadoA.exito ? (
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                ) : (
-                  <AlertCircle className="h-4 w-4 text-red-600" />
-                )}
-                <span className="font-semibold text-gray-900">{resultadoA.mensaje}</span>
+                <p className="font-pixel text-xs font-bold uppercase">
+                  {resultadoA.mensaje}
+                </p>
               </div>
-              <p className="text-[11px] text-gray-600 font-mono">
-                Timestamp: {resultadoA.timestamp}
-              </p>
+
               {resultadoA.datos && (
-                <pre className="rounded bg-gray-900 p-2 font-mono text-[10px] text-green-300 overflow-x-auto">
-                  {JSON.stringify(resultadoA.datos, null, 2)}
-                </pre>
+                <div className="border-2 border-neo-dark bg-neo-dark p-2.5 font-pixel text-[11px] text-neo-bg">
+                  <span className="text-neo-yellow">{'//'} Payload confirmado:</span>
+                  <pre className="mt-1 overflow-x-auto text-[10px] text-neo-green">
+                    {JSON.stringify(resultadoA.datos, null, 2)}
+                  </pre>
+                </div>
               )}
             </div>
           ) : (
-            <p className="mt-4 text-center text-xs text-gray-400">
-              Esperando disparo de la simulación...
-            </p>
+            <div className="flex h-40 flex-col items-center justify-center border-2 border-dashed border-neo-dark/30 p-6 text-center">
+              <PixelIcon name="terminal" size={28} className="text-neo-blue mb-1" />
+              <p className="font-pixel text-xs font-bold uppercase text-neo-dark/70">
+                Petición #1 en espera
+              </p>
+            </div>
           )}
-        </div>
+        </RetroWindow>
 
-        {/* Resultado Petición B */}
-        <div
-          className={`rounded border p-4 transition ${
+        {/* Petición B */}
+        <RetroWindow
+          title="HILO_02: USUARIO_B"
+          badge={resultadoB ? `HTTP_${resultadoB.status}` : 'READY'}
+          headerColor={
             resultadoB
               ? resultadoB.exito
-                ? 'border-green-400 bg-green-50/40'
-                : 'border-red-400 bg-red-50/40'
-              : 'border-gray-300 bg-white'
-          }`}
+                ? 'green'
+                : 'pink'
+              : 'yellow'
+          }
         >
-          <div className="flex items-center justify-between border-b pb-2">
-            <h4 className="font-bold text-xs text-gray-800 uppercase">
-              Petición #2 (Usuario B)
-            </h4>
-            {resultadoB && (
-              <span
-                className={`font-mono text-xs font-bold px-2 py-0.5 rounded ${
-                  resultadoB.status === 201
-                    ? 'bg-green-600 text-white'
-                    : 'bg-red-600 text-white'
+          {resultadoB ? (
+            <div className="space-y-3">
+              <div className="flex items-center justify-between border-b-2 border-neo-dark pb-2">
+                <PixelBadge
+                  variant={resultadoB.exito ? 'green' : 'pink'}
+                  size="md"
+                  withDot
+                >
+                  {resultadoB.exito ? '201 CREATED' : '409 CONFLICT'}
+                </PixelBadge>
+                <span className="font-pixel text-[10px] text-neo-dark/70 font-bold">
+                  {resultadoB.timestamp}
+                </span>
+              </div>
+
+              <div
+                className={`border-2 border-neo-dark p-3 ${
+                  resultadoB.exito
+                    ? 'bg-neo-green/20 text-neo-dark'
+                    : 'bg-neo-pink/20 text-neo-dark'
                 }`}
               >
-                HTTP {resultadoB.status}
-              </span>
-            )}
-          </div>
-
-          {resultadoB ? (
-            <div className="mt-3 space-y-2 text-xs">
-              <div className="flex items-center gap-2">
-                {resultadoB.exito ? (
-                  <CheckCircle className="h-4 w-4 text-green-600" />
-                ) : (
-                  <ShieldAlert className="h-4 w-4 text-red-600" />
-                )}
-                <span className="font-semibold text-gray-900">{resultadoB.mensaje}</span>
+                <p className="font-pixel text-xs font-bold uppercase">
+                  {resultadoB.mensaje}
+                </p>
               </div>
-              <p className="text-[11px] text-gray-600 font-mono">
-                Timestamp: {resultadoB.timestamp}
-              </p>
+
               {resultadoB.datos && (
-                <pre className="rounded bg-gray-900 p-2 font-mono text-[10px] text-red-300 overflow-x-auto">
-                  {JSON.stringify(resultadoB.datos, null, 2)}
-                </pre>
+                <div className="border-2 border-neo-dark bg-neo-dark p-2.5 font-pixel text-[11px] text-neo-bg">
+                  <span className="text-neo-yellow">{'//'} Payload recibido:</span>
+                  <pre className="mt-1 overflow-x-auto text-[10px] text-neo-pink">
+                    {JSON.stringify(resultadoB.datos, null, 2)}
+                  </pre>
+                </div>
               )}
             </div>
           ) : (
-            <p className="mt-4 text-center text-xs text-gray-400">
-              Esperando disparo de la simulación...
-            </p>
+            <div className="flex h-40 flex-col items-center justify-center border-2 border-dashed border-neo-dark/30 p-6 text-center">
+              <PixelIcon name="terminal" size={28} className="text-neo-pink mb-1" />
+              <p className="font-pixel text-xs font-bold uppercase text-neo-dark/70">
+                Petición #2 en espera
+              </p>
+            </div>
           )}
-        </div>
+        </RetroWindow>
       </div>
     </section>
   );

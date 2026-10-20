@@ -2,6 +2,7 @@ export interface Usuario {
   id: number;
   nombre: string;
   email: string;
+  rol?: 'ALUMNO' | 'ADMINISTRADOR';
 }
 
 export interface Sala {
@@ -39,4 +40,16 @@ export interface ResultadoConcurrencia {
   timestamp: string;
   datos?: Record<string, unknown>;
   exito: boolean;
+}
+
+export interface NotificacionBullMQ {
+  id: string;
+  tipo: 'EMAIL_CONFIRMACION' | 'EMAIL_RECORDATORIO' | 'CONCURRENCIA_ALERT';
+  asunto: string;
+  destinatario: string;
+  cuerpo: string;
+  timestamp: string;
+  jobId: string;
+  cola: 'correo-inmediato' | 'correo-recordatorio';
+  delay: string;
 }

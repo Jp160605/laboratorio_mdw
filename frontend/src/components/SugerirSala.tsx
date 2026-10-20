@@ -2,7 +2,10 @@
 
 import React, { useState } from 'react';
 import { Sala } from '@/types';
-import { Sparkles, Users, Clock, ArrowRight } from 'lucide-react';
+import PixelIcon from '@/components/PixelIcon';
+import PixelButton from '@/components/PixelButton';
+import PixelBadge from '@/components/PixelBadge';
+import RetroWindow from '@/components/RetroWindow';
 
 interface SugerirSalaProps {
   fechaActual: string;
@@ -16,6 +19,7 @@ interface SugerenciaResultado {
   diferenciaHoraria: number;
   desperdicioAforo: number;
   puntuacionCosto: number;
+  porcentajeAjuste: number;
 }
 
 export default function SugerirSala({
@@ -28,7 +32,7 @@ export default function SugerirSala({
   const [aforoDeseado, setAforoDeseado] = useState<number>(12);
   const [sugerencia, setSugerencia] = useState<SugerenciaResultado | null>(null);
 
-  // Simulación del algoritmo del Reto en cliente para la maqueta
+  // Simulación del algoritmo del Reto en cliente
   const handleCalcularSugerencia = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -47,11 +51,16 @@ export default function SugerirSala({
     let mejorResultado: SugerenciaResultado | null = null;
 
     for (const sala of candidatas) {
-      // Tomamos un bloque de prueba disponible cercano
-      const horaBloque = horaDeseada; // En backend será calculado en SQL
+      const horaBloque = horaDeseada;
       const diffHoraria = Math.abs(horaBloque - horaDeseada);
       const desperdicio = sala.capacidad - aforoDeseado;
-      const costo = diffHoraria * 100 + desperdicio; // Ponderación de costo
+      const costo = diffHoraria * 100 + desperdicio;
+
+      // Cálculo de porcentaje de ajuste (100% es ajuste perfecto sin desperdicio)
+      const porcentaje = Math.max(
+        60,
+        Math.min(99, Math.round(100 - (desperdicio / sala.capacidad) * 40 - diffHoraria * 15))
+      );
 
       if (!mejorResultado || costo < mejorResultado.puntuacionCosto) {
         mejorResultado = {
@@ -60,6 +69,7 @@ export default function SugerirSala({
           diferenciaHoraria: diffHoraria,
           desperdicioAforo: desperdicio,
           puntuacionCosto: costo,
+          porcentajeAjuste: porcentaje,
         };
       }
     }
@@ -69,135 +79,184 @@ export default function SugerirSala({
 
   return (
     <section className="space-y-4">
-      {/* Encabezado del Reto */}
-      <div className="rounded border border-gray-300 bg-white p-4">
-        <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-indigo-600" />
-          <h2 className="text-base font-bold text-gray-900">
-            Recomendador Inteligente: &quot;Mejor Sala&quot; (Reto)
-          </h2>
-        </div>
-        <p className="mt-1 text-xs text-gray-600">
-          Algoritmo de optimización que minimiza la desviación horaria y el desperdicio de asientos mediante una función de costo SQL.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        {/* Formulario de Criterios */}
-        <form
-          onSubmit={handleCalcularSugerencia}
-          className="space-y-4 rounded border border-gray-300 bg-white p-4"
-        >
-          <h3 className="font-semibold text-xs uppercase text-gray-500">Parámetros Deseados</h3>
-
+      {/* Banner de Contexto de Optimización */}
+      <RetroWindow
+        title="RECOMENDADOR_OPTIMO.EXE"
+        badge="ALGORITMO_COSTO"
+        headerColor="blue"
+      >
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <label className="block text-xs font-semibold text-gray-700">Fecha del Bloque</label>
-            <input
-              type="date"
-              value={fecha}
-              onChange={(e) => setFecha(e.target.value)}
-              className="mt-1 w-full rounded border border-gray-300 p-2 text-xs font-medium focus:border-black focus:outline-none"
-              required
-            />
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-gray-700">Hora Deseada</label>
-            <select
-              value={horaDeseada}
-              onChange={(e) => setHoraDeseada(Number(e.target.value))}
-              className="mt-1 w-full rounded border border-gray-300 p-2 text-xs font-medium focus:border-black focus:outline-none"
-            >
-              {Array.from({ length: 13 }, (_, i) => i + 8).map((h) => (
-                <option key={h} value={h}>
-                  {h < 10 ? `0${h}:00` : `${h}:00`} a {h + 1 < 10 ? `0${h + 1}:00` : `${h + 1}:00`}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-xs font-semibold text-gray-700">Aforo Requerido (Personas)</label>
-            <input
-              type="number"
-              min={1}
-              max={100}
-              value={aforoDeseado}
-              onChange={(e) => setAforoDeseado(Number(e.target.value))}
-              className="mt-1 w-full rounded border border-gray-300 p-2 text-xs font-medium focus:border-black focus:outline-none"
-              required
-            />
-            <p className="mt-1 text-[11px] text-gray-500">
-              Filtra salas donde <code className="bg-gray-100 px-1 font-mono">capacidad &gt;= aforo</code>.
+            <h2 className="font-pixel text-base font-bold text-neo-dark uppercase tracking-wide">
+              Función de Costo: Minimización de Espacio y Tiempo
+            </h2>
+            <p className="font-body text-xs text-neo-dark/80">
+              Calcula en SQL puro la sala más eficiente: <code className="bg-neo-yellow px-1 py-0.5 border border-neo-dark font-pixel font-bold">MIN(ABS(hora - deseada)*10 + (capacidad - aforo))</code>
             </p>
           </div>
+          <PixelBadge variant="yellow" withDot>
+            SQL NATIVO
+          </PixelBadge>
+        </div>
+      </RetroWindow>
 
-          <button
-            type="submit"
-            className="w-full rounded border border-black bg-black py-2 text-xs font-bold text-white transition hover:bg-gray-800"
-          >
-            Calcular Mejor Sala con Función de Costo
-          </button>
-        </form>
+      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+        {/* Formulario de Parámetros */}
+        <RetroWindow
+          title="PARAMETROS_ENTRADA.SYS"
+          badge="INPUT"
+          headerColor="cream"
+        >
+          <form onSubmit={handleCalcularSugerencia} className="space-y-4">
+            <div>
+              <label className="block font-pixel text-xs font-bold uppercase text-neo-dark">
+                {'//'} Fecha de Reserva
+              </label>
+              <input
+                type="date"
+                value={fecha}
+                onChange={(e) => setFecha(e.target.value)}
+                className="mt-1 w-full border-3 border-neo-dark bg-transparent p-2.5 font-pixel text-xs font-bold text-neo-dark focus:bg-neo-yellow focus:outline-none"
+                required
+              />
+            </div>
 
-        {/* Visualización de la Sala Recomendada */}
-        <div className="flex flex-col justify-between rounded border border-gray-300 bg-white p-4">
-          <h3 className="font-semibold text-xs uppercase text-gray-500">Resultado de la Sugerencia</h3>
+            <div>
+              <label className="block font-pixel text-xs font-bold uppercase text-neo-dark">
+                {'//'} Hora Preferida
+              </label>
+              <select
+                value={horaDeseada}
+                onChange={(e) => setHoraDeseada(Number(e.target.value))}
+                className="mt-1 w-full border-3 border-neo-dark bg-transparent p-2.5 font-pixel text-xs font-bold text-neo-dark focus:bg-neo-yellow focus:outline-none"
+              >
+                {Array.from({ length: 13 }, (_, i) => i + 8).map((h) => (
+                  <option key={h} value={h}>
+                    {h < 10 ? `0${h}:00` : `${h}:00`} a{' '}
+                    {h + 1 < 10 ? `0${h + 1}:00` : `${h + 1}:00`}
+                  </option>
+                ))}
+              </select>
+            </div>
 
+            <div>
+              <label className="block font-pixel text-xs font-bold uppercase text-neo-dark">
+                {'//'} Aforo Necesario (Personas)
+              </label>
+              <input
+                type="number"
+                min={1}
+                max={100}
+                value={aforoDeseado}
+                onChange={(e) => setAforoDeseado(Number(e.target.value))}
+                className="mt-1 w-full border-3 border-neo-dark bg-transparent p-2.5 font-pixel text-xs font-bold text-neo-dark focus:bg-neo-yellow focus:outline-none"
+                required
+              />
+              <p className="mt-1 font-body text-[11px] text-neo-dark/70">
+                Filtra únicamente espacios donde <span className="font-bold">capacidad &gt;= aforo</span>.
+              </p>
+            </div>
+
+            <PixelButton
+              type="submit"
+              variant="warning"
+              size="md"
+              className="w-full"
+              icon={<PixelIcon name="zap" size={16} />}
+            >
+              Calcular Sala Óptima
+            </PixelButton>
+          </form>
+        </RetroWindow>
+
+        {/* Visualización del Resultado de Sugerencia */}
+        <RetroWindow
+          title="SALIDA_OPTIMA.DAT"
+          badge="RESULTADO"
+          headerColor="green"
+        >
           {sugerencia ? (
-            <div className="my-auto space-y-4">
-              <div className="rounded border border-indigo-200 bg-indigo-50/50 p-4">
-                <span className="rounded bg-indigo-600 px-2 py-0.5 text-[10px] font-bold text-white uppercase">
-                  Recomendación Óptima
-                </span>
-                <h4 className="mt-2 text-lg font-bold text-gray-900">{sugerencia.sala.nombre}</h4>
-                <p className="text-xs text-gray-600">{sugerencia.sala.ubicacion}</p>
-
-                <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
-                  <div className="flex items-center gap-1.5 rounded border border-indigo-200 bg-white p-2">
-                    <Clock className="h-4 w-4 text-indigo-600" />
-                    <div>
-                      <span className="block text-[10px] text-gray-500">Horario Asignado</span>
-                      <span className="font-bold">
-                        {sugerencia.horaInicio}:00 - {sugerencia.horaInicio + 1}:00
-                      </span>
-                    </div>
+            <div className="flex h-full flex-col justify-between space-y-4">
+              <div className="border-3 border-neo-dark bg-neo-yellow p-4">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <PixelBadge variant="pink" size="sm">
+                      MEJOR AJUSTE ENCONTRADO
+                    </PixelBadge>
+                    <h4 className="mt-2 font-pixel text-xl font-bold uppercase tracking-wider text-neo-dark">
+                      {sugerencia.sala.nombre}
+                    </h4>
+                    <p className="font-body text-xs text-neo-dark/80">
+                      {sugerencia.sala.ubicacion}
+                    </p>
                   </div>
-                  <div className="flex items-center gap-1.5 rounded border border-indigo-200 bg-white p-2">
-                    <Users className="h-4 w-4 text-indigo-600" />
-                    <div>
-                      <span className="block text-[10px] text-gray-500">Capacidad Total</span>
-                      <span className="font-bold">{sugerencia.sala.capacidad} personas</span>
-                    </div>
+
+                  {/* Puntuación estilo arcade / figma */}
+                  <div className="flex h-16 w-16 shrink-0 flex-col items-center justify-center border-3 border-neo-dark bg-transparent">
+                    <span className="font-pixel text-base font-bold text-neo-dark">
+                      {sugerencia.porcentajeAjuste}%
+                    </span>
+                    <span className="font-pixel text-[9px] uppercase text-neo-blue font-bold">
+                      MATCH
+                    </span>
                   </div>
                 </div>
 
-                {/* Justificación de la función de costo */}
-                <div className="mt-3 rounded bg-white p-2.5 text-[11px] text-gray-700 space-y-1 border border-indigo-100">
-                  <p className="font-semibold text-indigo-900">Cálculo de la función de costo:</p>
-                  <p>• Desviación horaria: {sugerencia.diferenciaHoraria} horas</p>
-                  <p>• Asientos desaprovechados: {sugerencia.desperdicioAforo} asientos</p>
-                  <p className="font-mono text-[10px] text-gray-500">
-                    Costo = ABS({sugerencia.horaInicio} - {horaDeseada}) + ({sugerencia.sala.capacidad} - {aforoDeseado})
+                {/* Métricas en Grilla Modular */}
+                <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
+                  <div className="border-2 border-neo-dark bg-transparent p-2">
+                    <span className="block font-pixel text-[10px] uppercase text-neo-dark/60 font-bold">
+                      {'//'} Horario Bloque
+                    </span>
+                    <span className="font-pixel text-sm font-bold text-neo-dark">
+                      {sugerencia.horaInicio}:00 - {sugerencia.horaInicio + 1}:00
+                    </span>
+                  </div>
+                  <div className="border-2 border-neo-dark bg-transparent p-2">
+                    <span className="block font-pixel text-[10px] uppercase text-neo-dark/60 font-bold">
+                      {'//'} Capacidad Sala
+                    </span>
+                    <span className="font-pixel text-sm font-bold text-neo-dark">
+                      {sugerencia.sala.capacidad} personas
+                    </span>
+                  </div>
+                </div>
+
+                {/* Justificación de Función de Costo */}
+                <div className="mt-3 border-2 border-neo-dark bg-transparent p-2.5 font-body text-xs space-y-1">
+                  <p className="font-pixel font-bold uppercase text-neo-dark text-[11px]">
+                    Desglose de Eficiencia:
                   </p>
+                  <p>• Desviación horaria: <strong className="font-pixel">{sugerencia.diferenciaHoraria}h</strong></p>
+                  <p>• Asientos sobrantes: <strong className="font-pixel">{sugerencia.desperdicioAforo} pers.</strong></p>
                 </div>
               </div>
 
-              <button
+              <PixelButton
                 type="button"
-                onClick={() => onReservarSugerencia(sugerencia.sala, sugerencia.horaInicio)}
-                className="flex w-full items-center justify-center gap-2 rounded border border-indigo-700 bg-indigo-600 py-2.5 text-xs font-bold text-white transition hover:bg-indigo-700"
+                variant="success"
+                size="lg"
+                className="w-full"
+                onClick={() =>
+                  onReservarSugerencia(sugerencia.sala, sugerencia.horaInicio)
+                }
+                icon={<PixelIcon name="check" size={18} />}
               >
-                <span>Aceptar y Proceder a Reservar</span>
-                <ArrowRight className="h-4 w-4" />
-              </button>
+                Aceptar y Confirmar Reserva
+              </PixelButton>
             </div>
           ) : (
-            <div className="my-auto rounded border border-dashed border-gray-300 p-8 text-center text-xs text-gray-500">
-              Ingresa los parámetros y pulsa en &quot;Calcular Mejor Sala&quot; para ver la opción óptima calculada por la función de costo.
+            <div className="flex h-56 flex-col items-center justify-center border-2 border-dashed border-neo-dark/40 bg-transparent p-6 text-center">
+              <PixelIcon name="sparkles" size={32} className="text-neo-blue mb-2" />
+              <p className="font-pixel text-xs font-bold uppercase tracking-wider text-neo-dark">
+                Esperando Parámetros...
+              </p>
+              <p className="mt-1 font-body text-xs text-neo-dark/70">
+                Selecciona fecha, hora y aforo para evaluar la función de costo y encontrar la mejor sala disponible.
+              </p>
             </div>
           )}
-        </div>
+        </RetroWindow>
       </div>
     </section>
   );

@@ -2,7 +2,9 @@
 
 import React from 'react';
 import { Usuario } from '@/types';
-import { Radio, User, LogIn } from 'lucide-react';
+import PixelIcon from '@/components/PixelIcon';
+import PixelButton from '@/components/PixelButton';
+import PixelBadge from '@/components/PixelBadge';
 
 interface HeaderProps {
   usuarioActual: Usuario | null;
@@ -18,47 +20,67 @@ export default function Header({
   wsConectado,
 }: HeaderProps) {
   // Usuarios simulados para pruebas de concurrencia
-  const usuarioA: Usuario = { id: 1, nombre: 'Juan Pérez (Alumno A)', email: 'alumnoA@universidad.edu' };
-  const usuarioB: Usuario = { id: 2, nombre: 'María López (Alumno B)', email: 'alumnoB@universidad.edu' };
+  const usuarioA: Usuario = {
+    id: 1,
+    nombre: 'Juan Pérez (Alumno A)',
+    email: 'alumnoA@universidad.edu',
+  };
+  const usuarioB: Usuario = {
+    id: 2,
+    nombre: 'María López (Alumno B)',
+    email: 'alumnoB@universidad.edu',
+  };
 
   return (
-    <header className="border-b border-gray-300 bg-gray-50 px-6 py-4">
-      <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        {/* Identidad del Sistema */}
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="rounded bg-black px-2 py-0.5 text-xs font-bold uppercase tracking-wider text-white">
-              MVP Académico
-            </span>
-            <span className="flex items-center gap-1.5 text-xs font-medium text-gray-600">
-              <Radio
-                className={`h-3.5 w-3.5 ${
-                  wsConectado ? 'text-green-600 animate-pulse' : 'text-red-500'
+    <header className="border-b-2 border-neo-dark bg-[#FFFAEB] px-4 py-3.5 sm:px-6">
+      <div className="mx-auto flex max-w-7xl flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        {/* Identidad del Sistema y Marca Neobrutalista */}
+        <div className="flex flex-col gap-1.5">
+          <div className="flex flex-wrap items-center gap-2.5">
+            {/* Logo Marca */}
+            <div className="flex items-center gap-2 border-2 border-neo-dark bg-neo-yellow px-3 py-1">
+              <PixelIcon name="monitor" size={18} className="text-neo-dark" />
+              <span className="font-pixel text-base font-bold tracking-wider text-neo-dark">
+                LabReserva
+              </span>
+            </div>
+
+            <PixelBadge variant="pink" size="sm">
+              v1.0 ACID
+            </PixelBadge>
+
+            {/* Estado WebSocket */}
+            <div className="flex items-center gap-2 border-2 border-neo-dark px-2.5 py-1 text-xs font-pixel">
+              <span
+                className={`inline-block h-2.5 w-2.5 rounded-full border border-neo-dark ${
+                  wsConectado ? 'bg-neo-green animate-pulse' : 'bg-neo-pink'
                 }`}
               />
-              WebSockets: {wsConectado ? 'Conectado (Tiempo Real)' : 'Desconectado'}
-            </span>
+              <span className="text-neo-dark font-bold">
+                WS: {wsConectado ? 'ONLINE' : 'OFFLINE'}
+              </span>
+            </div>
           </div>
-          <h1 className="text-xl font-bold tracking-tight text-gray-900">
-            Sistema de Reservas - Salas y Laboratorios
-          </h1>
-          <p className="text-xs text-gray-500">
-            Control de Concurrencia Optimista (version) • Transacciones ACID • BullMQ + Redis
+
+          <p className="font-body text-xs text-neo-dark/80">
+            Control de Concurrencia Optimista (columna <code className="bg-neo-yellow px-1 py-0.5 border border-neo-dark font-pixel font-bold">version</code>) {'//'} Transacciones puras sin ORM
           </p>
         </div>
 
-        {/* Panel de Sesión y Selector Rápido para Demostraciones */}
+        {/* Panel de Sesión y Selector de Usuario */}
         <div className="flex flex-wrap items-center gap-3">
-          {/* Herramienta de Demostración: Alternador Rápido de Usuarios */}
-          <div className="flex items-center gap-1 rounded border border-gray-300 bg-white p-1 text-xs">
-            <span className="px-2 text-gray-500 font-medium">Simular como:</span>
+          {/* Alternador Rápido de Usuarios para Demostración */}
+          <div className="flex items-center gap-1.5 border-2 border-neo-dark p-1.5">
+            <span className="px-2 font-pixel text-xs font-bold uppercase text-neo-dark">
+              Simular:
+            </span>
             <button
               type="button"
               onClick={() => onCambiarUsuario(usuarioA)}
-              className={`rounded px-2 py-1 font-semibold transition ${
+              className={`px-2.5 py-1 font-pixel text-xs font-bold transition-all ${
                 usuarioActual?.id === usuarioA.id
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-700 hover:bg-gray-100'
+                  ? 'bg-neo-blue text-white border-2 border-neo-dark'
+                  : 'bg-transparent text-neo-dark hover:bg-neo-yellow'
               }`}
             >
               Usuario A
@@ -66,34 +88,40 @@ export default function Header({
             <button
               type="button"
               onClick={() => onCambiarUsuario(usuarioB)}
-              className={`rounded px-2 py-1 font-semibold transition ${
+              className={`px-2.5 py-1 font-pixel text-xs font-bold transition-all ${
                 usuarioActual?.id === usuarioB.id
-                  ? 'bg-blue-600 text-white'
-                  : 'text-gray-700 hover:bg-gray-100'
+                  ? 'bg-neo-blue text-white border-2 border-neo-dark'
+                  : 'bg-transparent text-neo-dark hover:bg-neo-yellow'
               }`}
             >
               Usuario B
             </button>
           </div>
 
-          {/* Información del Usuario Activo */}
+          {/* Estado de Usuario Activo o Botón Login */}
           {usuarioActual ? (
-            <div className="flex items-center gap-2 rounded border border-gray-300 bg-white px-3 py-1.5 text-xs">
-              <User className="h-4 w-4 text-gray-500" />
+            <div className="flex items-center gap-2 px-3 py-1.5">
+              <div className="flex h-7 w-7 items-center justify-center border-2 border-neo-dark bg-neo-green">
+                <PixelIcon name="user" size={16} className="text-neo-dark" />
+              </div>
               <div>
-                <p className="font-semibold text-gray-800 leading-none">{usuarioActual.nombre}</p>
-                <p className="text-gray-500 text-[11px]">{usuarioActual.email}</p>
+                <p className="font-pixel text-xs font-bold text-neo-dark leading-tight">
+                  {usuarioActual.nombre}
+                </p>
+                <p className="font-body text-[11px] text-neo-dark/70">
+                  {usuarioActual.email}
+                </p>
               </div>
             </div>
           ) : (
-            <button
-              type="button"
+            <PixelButton
+              variant="warning"
+              size="sm"
               onClick={onAbrirAuth}
-              className="flex items-center gap-1.5 rounded border border-gray-400 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-100"
+              icon={<PixelIcon name="lock" size={14} />}
             >
-              <LogIn className="h-4 w-4" />
-              Iniciar Sesión / Registro (JWT)
-            </button>
+              Iniciar Sesión
+            </PixelButton>
           )}
         </div>
       </div>

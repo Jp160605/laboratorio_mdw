@@ -3,25 +3,58 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --neo-dark: #073B4C;
+  --neo-bg: #FFFAEB;
+  --neo-blue: #118AB2;
+  --neo-pink: #EF476F;
+  --neo-yellow: #FFD166;
+  --neo-green: #06D6A0;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--neo-dark);
+  background-color: var(--neo-bg);
+  background-image: 
+    radial-gradient(#073b4c1a 1.2px, transparent 1.2px),
+    radial-gradient(#073b4c0d 1.2px, #fffaeb 1.2px);
+  background-size: 24px 24px;
+  background-position: 0 0, 12px 12px;
+  min-height: 100vh;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+/* Custom retro scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #FFFAEB;
+  border-left: 2px solid #073B4C;
+}
+::-webkit-scrollbar-thumb {
+  background: #FFD166;
+  border: 2px solid #073B4C;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #EF476F;
+}
+
+::selection {
+  background-color: #FFD166;
+  color: #073B4C;
+}
+
+/* Crosshair pixel cursor effect class for headers */
+.pixel-crosshair {
+  position: relative;
+}
+.pixel-crosshair::before {
+  content: "+";
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-family: var(--font-pixel), monospace;
+  color: #EF476F;
+  font-weight: bold;
 }

@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@iconify-json/streamline-pixel": "^1.2.0",
+    "@iconify/react": "^6.0.3",
     "lucide-react": "^1.59.0",
     "next": "14.2.35",
     "react": "^18",

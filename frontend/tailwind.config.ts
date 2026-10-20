@@ -9,8 +9,26 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
+        'neo-dark': '#073B4C',
+        'neo-bg': '#FFFAEB',
+        'neo-blue': '#118AB2',
+        'neo-pink': '#EF476F',
+        'neo-yellow': '#FFD166',
+        'neo-green': '#06D6A0',
+      },
+      fontFamily: {
+        pixel: ['var(--font-pixel)', 'monospace'],
+        body: ['var(--font-body)', 'sans-serif'],
+      },
+      boxShadow: {
+        'neo-sm': 'none',
+        'neo': 'none',
+        'neo-md': 'none',
+        'neo-lg': 'none',
+        'neo-xl': 'none',
+      },
+      borderWidth: {
+        '3': '3px',
       },
     },
   },
