@@ -3,7 +3,7 @@
 import React from 'react';
 
 type StarType = 'cross-vertical' | 'cross-horizontal' | 'dot-to-cross';
-type StarColor = '#118AB2' | '#EF476F' | '#FFD166' | '#06D6A0';
+type StarColor = '#118AB2' | '#EF476F' | '#FFD166';
 
 interface StarConfig {
   id: number;
@@ -18,30 +18,30 @@ interface StarConfig {
 const STARS: StarConfig[] = [
   // Franja 1 (0% - 16.6%)
   { id: 1, top: '5%', left: '8%', color: '#FFD166', type: 'cross-vertical', delay: '0s' },
-  { id: 2, top: '9%', left: '34%', color: '#06D6A0', type: 'dot-to-cross', delay: '1.1s' },
+  { id: 2, top: '9%', left: '34%', color: '#FFD166', type: 'dot-to-cross', delay: '1.1s' },
   { id: 3, top: '12%', left: '60%', color: '#118AB2', type: 'dot-to-cross', delay: '2.2s' },
   { id: 4, top: '6%', left: '88%', color: '#FFD166', type: 'cross-horizontal', delay: '0.7s' },
 
   // Franja 2 (16.6% - 33.3%)
   { id: 5, top: '19%', left: '15%', color: '#118AB2', type: 'dot-to-cross', delay: '1.8s' },
   { id: 6, top: '23%', left: '44%', color: '#EF476F', type: 'dot-to-cross', delay: '0.4s' },
-  { id: 7, top: '24%', left: '79%', color: '#06D6A0', type: 'cross-vertical', delay: '1.5s' },
+  { id: 7, top: '24%', left: '79%', color: '#118AB2', type: 'cross-vertical', delay: '1.5s' },
 
   // Franja 3 (33.3% - 50%)
   { id: 8, top: '37%', left: '5%', color: '#118AB2', type: 'dot-to-cross', delay: '2.6s' },
   { id: 9, top: '39%', left: '53%', color: '#118AB2', type: 'dot-to-cross', delay: '0.9s' },
-  { id: 10, top: '42%', left: '87%', color: '#06D6A0', type: 'cross-horizontal', delay: '1.9s' },
+  { id: 10, top: '42%', left: '87%', color: '#EF476F', type: 'cross-horizontal', delay: '1.9s' },
 
   // Franja 4 (50% - 66.6%)
   { id: 11, top: '51%', left: '19%', color: '#FFD166', type: 'dot-to-cross', delay: '0.3s' },
-  { id: 12, top: '55%', left: '35%', color: '#06D6A0', type: 'cross-vertical', delay: '1.4s' },
+  { id: 12, top: '55%', left: '35%', color: '#FFD166', type: 'cross-vertical', delay: '1.4s' },
   { id: 13, top: '58%', left: '77%', color: '#118AB2', type: 'dot-to-cross', delay: '2.7s' },
 
   // Franja 5 (66.6% - 83.3%)
-  { id: 14, top: '67%', left: '15%', color: '#06D6A0', type: 'cross-horizontal', delay: '0.8s' },
+  { id: 14, top: '67%', left: '15%', color: '#118AB2', type: 'cross-horizontal', delay: '0.8s' },
   { id: 15, top: '71%', left: '42%', color: '#EF476F', type: 'cross-vertical', delay: '2.0s' },
   { id: 16, top: '72%', left: '57%', color: '#FFD166', type: 'cross-horizontal', delay: '0.2s' },
-  { id: 17, top: '75%', left: '91%', color: '#06D6A0', type: 'dot-to-cross', delay: '1.7s' },
+  { id: 17, top: '75%', left: '91%', color: '#EF476F', type: 'dot-to-cross', delay: '1.7s' },
 
   // Franja 6 (83.3% - 100%)
   { id: 18, top: '85%', left: '8%', color: '#FFD166', type: 'dot-to-cross', delay: '1.2s' },

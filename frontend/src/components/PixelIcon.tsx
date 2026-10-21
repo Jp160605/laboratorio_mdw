@@ -21,6 +21,7 @@ export type PixelIconName =
   | 'filter'
   | 'play'
   | 'heart'
+  | 'heart-outline'
   | 'trophy'
   | 'crosshair'
   | 'gamepad';
@@ -186,14 +187,23 @@ export default function PixelIcon({
       case 'play':
         return (
           <path
-            d="M5 4h2v16H5V4zm2 2h2v12H7V6zm2 2h2v8H9V8zm2 2h2v4h-2v-4zm2 1h2v2h-2v-2z"
+            d="M4 2h3v20H4V2zm3 2h3v16H7V4zm3 2h3v12h-3V6zm3 2h3v8h-3V8zm3 2h3v4h-3v-4zm3 1h3v2h-3v-2z"
             fill={color}
           />
         );
       case 'heart':
         return (
           <path
-            d="M5 4h5v2H5V4zm9 0h5v2h-5V4zM3 6h18v4H3V6zm2 4h14v2H5v-2zm2 2h10v2H7v-2zm2 2h6v2H9v-2zm2 2h2v2h-2v-2z"
+            d="M4 4h6v2H4V4zm10 0h6v2h-6V4zM2 6h20v6H2V6zm2 6h16v2H4v-2zm2 2h12v2H6v-2zm2 2h8v2H8v-2zm2 2h4v2h-4v-2zm1 2h2v2h-2v-2z"
+            fill={color}
+          />
+        );
+      case 'heart-outline':
+        return (
+          <path
+            fillRule="evenodd"
+            clipRule="evenodd"
+            d="M4 4h6v2H4V4zm10 0h6v2h-6V4zM2 6h2v6H2V6zm20 6h-2V6h2v6zm-2 2h-2v-2h2v2zm-2 2h-2v-2h2v2zm-2 2h-2v-2h2v2zm-2 2h-2v-2h2v2zm-2 2h-2v-2h2v2zm-2-2h-2v-2h2v2zm-2-2H8v-2h2v2zm-2-2H6v-2h2v2zm-2-2H4v-2h2v2zm6-8h4v2h-4V6z"
             fill={color}
           />
         );

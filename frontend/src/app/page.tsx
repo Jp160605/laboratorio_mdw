@@ -59,47 +59,58 @@ export default function LandingPage() {
             <span className="absolute bottom-0 right-0 w-4 h-4 border-b-3 border-r-3 border-[#FFFAEB]" />
 
             {/* Marcadores Laterales Punteados estilo Arcade Frame */}
-            <div className="absolute left-1.5 top-1/4 bottom-1/4 flex flex-col justify-between text-[#FFFAEB]/30 font-pixel text-[10px]">
-              <span>:</span>
-              <span>:</span>
-              <span className="text-neo-pink">■</span>
-              <span>:</span>
-              <span>:</span>
+            <div className="absolute left-2 top-1/4 bottom-1/4 flex flex-col justify-between items-center">
+              <span className="w-1.5 h-1.5 bg-[#FFFAEB]/30" />
+              <span className="w-1.5 h-1.5 bg-[#FFFAEB]/30" />
+              <span className="w-2 h-2 bg-[#EF476F] shadow-[0_0_6px_#EF476F]" />
+              <span className="w-1.5 h-1.5 bg-[#FFFAEB]/30" />
+              <span className="w-1.5 h-1.5 bg-[#FFFAEB]/30" />
             </div>
-            <div className="absolute right-1.5 top-1/4 bottom-1/4 flex flex-col justify-between text-[#FFFAEB]/30 font-pixel text-[10px]">
-              <span>:</span>
-              <span>:</span>
-              <span className="text-neo-pink">■</span>
-              <span>:</span>
-              <span>:</span>
+            <div className="absolute right-2 top-1/4 bottom-1/4 flex flex-col justify-between items-center">
+              <span className="w-1.5 h-1.5 bg-[#FFFAEB]/30" />
+              <span className="w-1.5 h-1.5 bg-[#FFFAEB]/30" />
+              <span className="w-2 h-2 bg-[#EF476F] shadow-[0_0_6px_#EF476F]" />
+              <span className="w-1.5 h-1.5 bg-[#FFFAEB]/30" />
+              <span className="w-1.5 h-1.5 bg-[#FFFAEB]/30" />
             </div>
 
-            {/* Cabecera Superior del Marco (HUD Arcade) */}
+            {/* Cabecera Superior del Marco (HUD Arcade con Pixel Art) */}
             <div className="w-full flex items-center justify-between text-[#FFFAEB] font-pixel text-xs sm:text-sm tracking-wider mb-6 sm:mb-8 pb-2">
               <div className="flex items-center gap-2">
-                <span className="font-bold text-[#FFD166]">1UP</span>
-                <span className="text-neo-pink text-sm animate-pulse">❤️</span>
-                <span className="text-[#FFFAEB]/60 text-xs">♡</span>
-                <span className="text-[#FFFAEB]/60 text-xs">♡</span>
-                <span className="text-[#FFFAEB]/40 tracking-widest hidden sm:inline">·····</span>
+                <span className="font-bold text-[#FFD166] mr-1">1UP</span>
+                {/* Corazón lleno en pixel art */}
+                <PixelIcon name="heart" size={16} color="#EF476F" className="animate-pulse" />
+                {/* Corazones vacíos en pixel art */}
+                <PixelIcon name="heart-outline" size={16} color="#FFFAEB" className="opacity-60" />
+                <PixelIcon name="heart-outline" size={16} color="#FFFAEB" className="opacity-60" />
+                {/* Fila de puntos en pixel art */}
+                <div className="hidden sm:flex items-center gap-1.5 ml-2">
+                  <span className="w-1.5 h-1.5 bg-[#FFFAEB]/40" />
+                  <span className="w-1.5 h-1.5 bg-[#FFFAEB]/40" />
+                  <span className="w-1.5 h-1.5 bg-[#FFFAEB]/40" />
+                  <span className="w-1.5 h-1.5 bg-[#FFFAEB]/40" />
+                  <span className="w-1.5 h-1.5 bg-[#FFFAEB]/40" />
+                </div>
               </div>
-              <div className="flex items-center gap-1.5 text-[#FFFAEB]/85 font-bold">
-                <span>CONTINUE?</span>
-                <span className="text-neo-yellow">⏋</span>
+              <div className="flex items-center gap-1.5 text-[#FFFAEB] font-bold">
+                <span className="tracking-widest">CONTINUE?</span>
+                <svg width={10} height={10} viewBox="0 0 10 10" fill="none" className="inline-block shrink-0">
+                  <path d="M0 0h10v10H7V3H0V0z" fill="#FFD166" />
+                </svg>
               </div>
             </div>
 
-            {/* Gran Título Centrado en 2 Líneas (Estilo GAME OVER) */}
+            {/* Gran Título Centrado en 2 Líneas (Laboratorio en Amarillo #FFD166) */}
             <div className="my-2 sm:my-4 text-center">
               <h1 className="font-pixel text-5xl sm:text-7xl lg:text-8xl font-bold uppercase text-white tracking-wider leading-[0.9] drop-shadow-[0_2px_0_#073B4C]">
                 Reserva tu
                 <br />
-                <span className="text-[#FFFAEB]">Laboratorio</span>
+                <span className="text-[#FFD166]">Laboratorio</span>
               </h1>
             </div>
 
-            {/* Menú Interactivo Vertical (Estilo RESTART / QUIT) */}
-            <div className="my-6 sm:my-8 w-full max-w-sm flex flex-col items-center space-y-3 font-pixel">
+            {/* Menú Interactivo Vertical (Tamaño x1.5 y Triángulo casi igual a la altura de la fuente) */}
+            <div className="my-6 sm:my-8 w-full max-w-lg lg:max-w-xl flex flex-col items-center space-y-3 font-pixel">
               {MENU_ITEMS.map((item, idx) => {
                 const isSelected = selectedIndex === idx;
                 return (
@@ -108,23 +119,23 @@ export default function LandingPage() {
                     type="button"
                     onClick={() => handleSelect(idx)}
                     onMouseEnter={() => setSelectedIndex(idx)}
-                    className={`group w-full flex items-center justify-center gap-3 py-1.5 text-center font-bold tracking-widest uppercase transition-all ${
+                    className={`group w-full flex items-center justify-center gap-2 sm:gap-3 py-1.5 text-center font-bold tracking-widest uppercase transition-all ${
                       isSelected
-                        ? 'text-[#06D6A0] text-2xl sm:text-3xl'
-                        : 'text-[#FFFAEB]/85 hover:text-white text-xl sm:text-2xl'
+                        ? 'text-[#06D6A0] text-3xl sm:text-4xl lg:text-5xl'
+                        : 'text-[#FFFAEB]/85 hover:text-white text-2xl sm:text-3xl lg:text-4xl'
                     }`}
                   >
-                    {/* Ícono Play Pixelado Cursor a la izquierda */}
+                    {/* Ícono Play Pixelado Cursor con altura acorde a la fuente */}
                     <span
-                      className={`inline-flex items-center justify-center transition-opacity ${
+                      className={`inline-flex items-center justify-center w-8 sm:w-10 lg:w-12 shrink-0 transition-opacity ${
                         isSelected ? 'opacity-100 text-[#06D6A0]' : 'opacity-0'
                       }`}
                     >
                       <PixelIcon
                         name="play"
-                        size={20}
+                        size={44}
                         color="#06D6A0"
-                        className="animate-pulse"
+                        className="w-7 h-7 sm:w-9 sm:h-9 lg:w-11 lg:h-11 animate-pulse"
                       />
                     </span>
 
@@ -132,7 +143,7 @@ export default function LandingPage() {
 
                     {/* Espaciador invisible para balancear y centrar el texto con el icono */}
                     <span
-                      className="inline-block w-5 opacity-0"
+                      className="inline-block w-8 sm:w-10 lg:w-12 shrink-0 opacity-0"
                       aria-hidden="true"
                     />
                   </button>
@@ -140,11 +151,22 @@ export default function LandingPage() {
               })}
             </div>
 
-            {/* Divisor Punteado Central con Cruz (Estilo del Poster) */}
-            <div className="w-full flex items-center justify-center gap-2 text-[#FFFAEB]/40 font-pixel text-xs my-2">
-              <span className="tracking-widest">··············</span>
-              <span className="text-neo-pink font-bold">✕</span>
-              <span className="tracking-widest">··············</span>
+            {/* Divisor Punteado Central con Cruz en Pixel Art */}
+            <div className="w-full flex items-center justify-center gap-2.5 my-4">
+              <div className="flex items-center gap-1.5">
+                {Array.from({ length: 10 }).map((_, i) => (
+                  <span key={`l-${i}`} className="w-1.5 h-1.5 bg-[#FFFAEB]/30" />
+                ))}
+              </div>
+              {/* Cruz Pixel Art */}
+              <svg width={10} height={10} viewBox="0 0 5 5" className="shrink-0" style={{ shapeRendering: 'crispEdges' }}>
+                <path d="M0 0h1v1H0zm4 0h1v1H4zm-1 1h1v1H3zm-2 0h1v1H1zm1 1h1v1H2zm-1 1h1v1H1zm2 0h1v1H3zm-3 1h1v1H0zm4 0h1v1H4z" fill="#EF476F" />
+              </svg>
+              <div className="flex items-center gap-1.5">
+                {Array.from({ length: 10 }).map((_, i) => (
+                  <span key={`r-${i}`} className="w-1.5 h-1.5 bg-[#FFFAEB]/30" />
+                ))}
+              </div>
             </div>
 
             {/* Lemas y Subtítulos en Dos Líneas */}
