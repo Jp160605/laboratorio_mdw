@@ -95,46 +95,46 @@ export default function AdminPage() {
 
         {/* Métricas Globales del Middleware */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="p-4">
+          <div className="p-4 border-2 border-[#FFFAEB]/20 bg-[#073B4C]/40 backdrop-blur-sm">
             <span className="font-pixel text-[11px] font-bold text-neo-blue uppercase block">
               {'//'} Espacios Registrados
             </span>
             <div className="mt-2 flex items-baseline justify-between">
-              <span className="font-pixel text-3xl font-bold text-neo-dark">{salas.length}</span>
-              <span className="font-pixel text-xs text-neo-dark/60 font-bold">SALAS</span>
+              <span className="font-pixel text-3xl font-bold text-white">{salas.length}</span>
+              <span className="font-pixel text-xs text-white/60 font-bold">SALAS</span>
             </div>
           </div>
 
-          <div className="p-4">
+          <div className="p-4 border-2 border-[#FFFAEB]/20 bg-[#073B4C]/40 backdrop-blur-sm">
             <span className="font-pixel text-[11px] font-bold text-neo-green uppercase block">
               {'//'} Reservas Totales
             </span>
             <div className="mt-2 flex items-baseline justify-between">
-              <span className="font-pixel text-3xl font-bold text-neo-dark">{reservas.length}</span>
+              <span className="font-pixel text-3xl font-bold text-white">{reservas.length}</span>
               <span className="font-pixel text-xs text-neo-green font-bold">
                 {reservas.filter((r) => r.estado === 'CONFIRMADA').length} ACTIVAS
               </span>
             </div>
           </div>
 
-          <div className="p-4">
+          <div className="p-4 border-2 border-[#FFFAEB]/20 bg-[#073B4C]/40 backdrop-blur-sm">
             <span className="font-pixel text-[11px] font-bold text-neo-pink uppercase block">
               {'//'} Suma Bloqueos Optimistas
             </span>
             <div className="mt-2 flex items-baseline justify-between">
-              <span className="font-pixel text-3xl font-bold text-neo-dark">
+              <span className="font-pixel text-3xl font-bold text-white">
                 v.{salas.reduce((acc, s) => acc + s.version, 0)}
               </span>
               <span className="font-pixel text-xs text-neo-pink font-bold">VERSION SUM</span>
             </div>
           </div>
 
-          <div className="p-4">
+          <div className="p-4 border-2 border-[#FFFAEB]/20 bg-[#073B4C]/40 backdrop-blur-sm">
             <span className="font-pixel text-[11px] font-bold text-neo-yellow uppercase block">
               {'//'} Trabajos en BullMQ
             </span>
             <div className="mt-2 flex items-baseline justify-between">
-              <span className="font-pixel text-3xl font-bold text-neo-dark">
+              <span className="font-pixel text-3xl font-bold text-white">
                 {notificaciones.length}
               </span>
               <span className="font-pixel text-xs text-neo-blue font-bold">JOBS REDIS</span>

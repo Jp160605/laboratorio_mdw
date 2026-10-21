@@ -42,17 +42,17 @@ export default function ReservasPage() {
 
       <main className="flex-1 mx-auto max-w-7xl p-4 sm:p-6 lg:p-8 space-y-6">
         {/* Cabecera Personalizada (Del Figma: "Bienvenida Mariana López") */}
-        <div className="p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-[#FFFAEB]">
           <div>
-            <div className="flex items-center gap-2 font-pixel text-xs font-bold text-neo-dark/70 mb-1">
+            <div className="flex items-center gap-2 font-pixel text-xs font-bold text-[#FFFAEB]/70 mb-1">
               <span>PANEL_RESERVAS</span>
               <span>{'//'}</span>
-              <span className="text-neo-blue">DISPONIBILIDAD_HORARIA</span>
+              <span className="text-[#06D6A0]">DISPONIBILIDAD_HORARIA</span>
             </div>
-            <h1 className="font-pixel text-2xl sm:text-3xl font-bold uppercase text-neo-dark">
-              Bienvenido(a), <span className="bg-neo-yellow px-2 border-2 border-neo-dark">{usuarioActual ? usuarioActual.nombre : 'Invitado'}</span>
+            <h1 className="font-pixel text-2xl sm:text-3xl font-bold uppercase text-white">
+              Bienvenido(a), <span className="bg-neo-yellow text-neo-dark px-2 border-2 border-neo-dark">{usuarioActual ? usuarioActual.nombre : 'Invitado'}</span>
             </h1>
-            <p className="mt-1 font-body text-xs text-neo-dark/80">
+            <p className="mt-1 font-body text-xs text-[#FFFAEB]/85">
               Explora las salas por horario, revisa la versión de cada espacio y agenda bloques con control de concurrencia optimista.
             </p>
           </div>

@@ -15,17 +15,17 @@ export default function MisReservasPage() {
 
       <main className="flex-1 mx-auto max-w-7xl p-4 sm:p-6 lg:p-8 space-y-6">
         {/* Cabecera del Historial */}
-        <div className="p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-[#FFFAEB]">
           <div>
-            <div className="flex items-center gap-2 font-pixel text-xs font-bold text-neo-dark/70 mb-1">
+            <div className="flex items-center gap-2 font-pixel text-xs font-bold text-[#FFFAEB]/70 mb-1">
               <span>HISTORIAL_MOVIMIENTOS</span>
               <span>{'//'}</span>
-              <span className="text-neo-pink">MIS_RESERVAS</span>
+              <span className="text-[#EF476F]">MIS_RESERVAS</span>
             </div>
-            <h1 className="font-pixel text-2xl sm:text-3xl font-bold uppercase text-neo-dark">
+            <h1 className="font-pixel text-2xl sm:text-3xl font-bold uppercase text-white">
               Tus Movimientos // Reservas
             </h1>
-            <p className="mt-1 font-body text-xs text-neo-dark/80">
+            <p className="mt-1 font-body text-xs text-[#FFFAEB]/85">
               Gestiona tus reservas activas, cancela con mínimo 2 horas de anticipación (RF-05) y visualiza las confirmaciones procesadas por BullMQ.
             </p>
           </div>

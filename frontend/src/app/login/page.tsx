@@ -48,6 +48,7 @@ export default function LoginPage() {
             title="SISTEMA_ACCESO_AUTH.EXE"
             badge="JWT_SESSION"
             headerColor="yellow"
+            className="bg-[#FFFAEB]"
           >
             {/* Header del Formulario */}
             <div className="border-b-2 border-neo-dark pb-4 mb-4">

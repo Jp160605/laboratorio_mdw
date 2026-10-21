@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { DotGothic16, Questrial } from "next/font/google";
 import { ReservasProvider } from "@/context/ReservasContext";
 import NotificationDrawer from "@/components/NotificationDrawer";
+import PixelSkyBackground from "@/components/PixelSkyBackground";
 import "./globals.css";
 
 const dotGothic = DotGothic16({
@@ -30,7 +31,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={`${dotGothic.variable} ${questrial.variable}`}>
-      <body className="font-body text-neo-dark bg-neo-bg antialiased selection:bg-neo-yellow selection:text-neo-dark">
+      <body className="font-body text-neo-dark antialiased selection:bg-neo-yellow selection:text-neo-dark relative min-h-screen">
+        <PixelSkyBackground />
         <ReservasProvider>
           {children}
           <NotificationDrawer />
