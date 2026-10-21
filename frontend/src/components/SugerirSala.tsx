@@ -27,17 +27,21 @@ export default function SugerirSala({
   salas,
   onReservarSugerencia,
 }: SugerirSalaProps) {
-  const [fecha, setFecha] = useState<string>(fechaActual);
+  const [fecha, setFecha] = useState<string>('');
   const [horaDeseada, setHoraDeseada] = useState<number>(10);
-  const [aforoDeseado, setAforoDeseado] = useState<number>(12);
+  const [aforoDeseado, setAforoDeseado] = useState<string>('');
   const [sugerencia, setSugerencia] = useState<SugerenciaResultado | null>(null);
+
+  const aforoNum = Number(aforoDeseado);
+  const formularioValido = fecha.trim() !== '' && aforoDeseado.trim() !== '' && aforoNum > 0;
 
   // Algoritmo de sugerencia óptima
   const handleCalcularSugerencia = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formularioValido) return;
 
     // 1. Filtrar salas con capacidad suficiente (capacidad >= aforo)
-    const candidatas = salas.filter((s) => s.capacidad >= aforoDeseado);
+    const candidatas = salas.filter((s) => s.capacidad >= aforoNum);
 
     if (candidatas.length === 0) {
       setSugerencia(null);
@@ -53,7 +57,7 @@ export default function SugerirSala({
     for (const sala of candidatas) {
       const horaBloque = horaDeseada;
       const diffHoraria = Math.abs(horaBloque - horaDeseada);
-      const desperdicio = sala.capacidad - aforoDeseado;
+      const desperdicio = sala.capacidad - aforoNum;
       const costo = diffHoraria * 100 + desperdicio;
 
       // Cálculo de porcentaje de ajuste
@@ -103,7 +107,7 @@ export default function SugerirSala({
         </div>
       </RetroWindow>
 
-      <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
         {/* Formulario de Parámetros (Tema Amarillo: #ffdf88 fondo, #ffb220 cabecera, #dd6902 bordes) */}
         <RetroWindow
           title="PARAMETROS_ENTRADA.SYS"
@@ -117,6 +121,7 @@ export default function SugerirSala({
               </label>
               <input
                 type="date"
+                min={fechaActual}
                 value={fecha}
                 onChange={(e) => setFecha(e.target.value)}
                 className="mt-1 w-full border-2 border-[#dd6902] bg-[#fef3c7] p-2.5 font-pixel text-xs font-bold text-[#073B4C] focus:bg-[#fef3c7] focus:outline-none"
@@ -150,8 +155,9 @@ export default function SugerirSala({
                 type="number"
                 min={1}
                 max={100}
+                placeholder="Ej. 12"
                 value={aforoDeseado}
-                onChange={(e) => setAforoDeseado(Number(e.target.value))}
+                onChange={(e) => setAforoDeseado(e.target.value)}
                 className="mt-1 w-full border-2 border-[#dd6902] bg-[#fef3c7] p-2.5 font-pixel text-xs font-bold text-[#073B4C] focus:bg-[#fef3c7] focus:outline-none"
                 required
               />
@@ -160,15 +166,19 @@ export default function SugerirSala({
               </p>
             </div>
 
-            <PixelButton
+            {/* Botón CTA Verde (#06D6A0), deshabilitado con verde claro (#a7f3d0) hasta ingresar datos */}
+            <button
               type="submit"
-              variant="warning"
-              size="md"
-              className="w-full"
-              icon={<PixelIcon name="zap" size={16} />}
+              disabled={!formularioValido}
+              className={`w-full py-2.5 px-4 font-pixel text-xs sm:text-sm font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 select-none ${
+                formularioValido
+                  ? 'bg-[#06D6A0] text-[#073B4C] border-2 border-[#073B4C] hover:bg-[#05b88a] cursor-pointer shadow-sm active:translate-y-0.5'
+                  : 'bg-[#a7f3d0] text-[#073B4C]/50 border-2 border-[#073B4C]/30 cursor-not-allowed'
+              }`}
             >
-              Calcular Sala Óptima
-            </PixelButton>
+              <PixelIcon name="zap" size={16} color={formularioValido ? '#073B4C' : '#073B4C80'} />
+              <span>Calcular Sala Óptima</span>
+            </button>
           </form>
         </RetroWindow>
 

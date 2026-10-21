@@ -98,7 +98,7 @@ export default function LandingPage() {
 
             {/* Gran Título Centrado en 2 Líneas (Laboratorio en Amarillo #FFD166) */}
             <div className="my-2 sm:my-4 text-center">
-              <h1 className="font-pixel text-5xl sm:text-7xl lg:text-8xl font-bold uppercase text-white tracking-wider leading-[0.9] drop-shadow-[0_2px_0_#073B4C]">
+              <h1 className="font-pixel text-4xl sm:text-7xl lg:text-8xl font-bold uppercase text-white tracking-wider leading-[0.9] drop-shadow-[0_2px_0_#073B4C]">
                 Reserva tu
                 <br />
                 <span className="text-[#FFD166]">Laboratorio</span>

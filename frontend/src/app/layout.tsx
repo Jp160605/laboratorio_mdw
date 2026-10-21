@@ -31,7 +31,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es" className={`${dotGothic.variable} ${vt323.variable}`}>
-      <body className="font-body text-neo-dark antialiased selection:bg-neo-yellow selection:text-neo-dark relative min-h-screen">
+      <body className="font-body text-base text-neo-dark antialiased selection:bg-neo-yellow selection:text-neo-dark relative min-h-screen pb-20 md:pb-0">
         <PixelSkyBackground />
         <ReservasProvider>
           {children}

@@ -24,7 +24,9 @@ export type PixelIconName =
   | 'heart-outline'
   | 'trophy'
   | 'crosshair'
-  | 'gamepad';
+  | 'gamepad'
+  | 'chevron-down'
+  | 'arrow-down';
 
 interface PixelIconProps {
   name: PixelIconName;
@@ -225,6 +227,14 @@ export default function PixelIcon({
         return (
           <path
             d="M6 7h12v2h3v7h-2v2h-3v-2h-2v-1H10v1H8v2H5v-2H3V9h3V7zm1 3v3h2v-3H7zm10 0v3h2v-3h-2z"
+            fill={color}
+          />
+        );
+      case 'chevron-down':
+      case 'arrow-down':
+        return (
+          <path
+            d="M5 8h2v2h2v2h2v2h2v-2h2v-2h2V8h2v2h-2v2h-2v2h-2v2h-2v-2H9v-2H7v-2H5V8z"
             fill={color}
           />
         );

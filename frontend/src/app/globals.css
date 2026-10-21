@@ -15,6 +15,7 @@ body {
   color: var(--neo-dark);
   background-color: #073B4C;
   min-height: 100vh;
+  font-size: 1rem;
 }
 
 /* Custom retro scrollbar */

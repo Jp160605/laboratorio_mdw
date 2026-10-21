@@ -162,8 +162,8 @@ export default function AdminPage() {
             </PixelButton>
           }
         >
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-left font-body text-xs">
+          <div className="w-full max-w-full overflow-x-auto">
+            <table className="w-full border-collapse text-left font-body text-xs min-w-[580px]">
               <thead>
                 <tr className="border-b-[3px] border-[#0284c7] bg-[#38bdf8] text-[#073B4C] font-pixel text-xs">
                   <th className="p-3">ID</th>
@@ -235,8 +235,8 @@ export default function AdminPage() {
             </div>
           }
         >
-          <div className="overflow-x-auto">
-            <table className="w-full border-collapse text-left font-body text-xs">
+          <div className="w-full max-w-full overflow-x-auto">
+            <table className="w-full border-collapse text-left font-body text-xs min-w-[580px]">
               <thead>
                 <tr className="border-b-[3px] border-[#e11d48] bg-[#fb7185] font-pixel text-xs text-[#073B4C]">
                   <th className="p-3">ID</th>
@@ -301,7 +301,7 @@ export default function AdminPage() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
               {notificaciones.map((n) => (
                 <div key={n.id} className="p-3 border-2 border-[#dd6902] bg-[#ffb220]/25 text-[#073B4C]">
                   <div className="flex items-center justify-between border-b border-[#dd6902]/30 pb-1.5">
