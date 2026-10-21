@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useReservas } from '@/context/ReservasContext';
@@ -9,6 +9,16 @@ import PixelIcon from '@/components/PixelIcon';
 export default function Navbar() {
   const pathname = usePathname();
   const { usuarioActual, setUsuarioActual, reservas } = useReservas();
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 0);
+    };
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const usuarioA = { id: 1, nombre: 'Juan Pérez (Alumno A)', email: 'alumnoA@universidad.edu', rol: 'ALUMNO' as const };
   const usuarioB = { id: 2, nombre: 'María López (Alumno B)', email: 'alumnoB@universidad.edu', rol: 'ALUMNO' as const };
@@ -24,7 +34,11 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="bg-transparent sticky top-0 z-40">
+    <nav
+      className={`sticky top-0 z-40 transition-colors duration-200 ${
+        scrolled ? 'bg-[#073B4C]' : 'bg-transparent'
+      }`}
+    >
       {/* Barra Superior con Logo MDW y Navegación */}
       <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex items-center justify-between gap-4">

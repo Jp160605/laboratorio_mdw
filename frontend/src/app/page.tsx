@@ -151,82 +151,103 @@ export default function LandingPage() {
               })}
             </div>
 
-            {/* Divisor Punteado Central con Cruz en Pixel Art */}
-            <div className="w-full flex items-center justify-center gap-2.5 my-4">
-              <div className="flex items-center gap-1.5">
-                {Array.from({ length: 10 }).map((_, i) => (
-                  <span key={`l-${i}`} className="w-1.5 h-1.5 bg-[#FFFAEB]/30" />
-                ))}
-              </div>
-              {/* Cruz Pixel Art */}
-              <svg width={10} height={10} viewBox="0 0 5 5" className="shrink-0" style={{ shapeRendering: 'crispEdges' }}>
-                <path d="M0 0h1v1H0zm4 0h1v1H4zm-1 1h1v1H3zm-2 0h1v1H1zm1 1h1v1H2zm-1 1h1v1H1zm2 0h1v1H3zm-3 1h1v1H0zm4 0h1v1H4z" fill="#EF476F" />
-              </svg>
-              <div className="flex items-center gap-1.5">
-                {Array.from({ length: 10 }).map((_, i) => (
-                  <span key={`r-${i}`} className="w-1.5 h-1.5 bg-[#FFFAEB]/30" />
-                ))}
-              </div>
-            </div>
-
-            {/* Lemas y Subtítulos en Dos Líneas */}
-            <div className="text-center font-pixel text-xs sm:text-sm tracking-wider uppercase my-3 space-y-1">
-              <p className="text-[#FFFAEB]/95 font-bold">
-                SISTEMA UNIVERSITARIO DE RESERVAS Y LABORATORIOS.
-              </p>
-              <p className="text-neo-pink font-bold tracking-widest text-[11px] sm:text-xs">
-                CONTROL DE CONCURRENCIA OPTIMISTA · TRANSACCIONES ACID PURAS.
-              </p>
-            </div>
-
-            {/* Divisor con Ícono de Gamepad Pixel Art */}
-            <div className="w-full flex items-center justify-center gap-3 my-3">
-              <span className="h-0.5 w-12 sm:w-16 bg-[#FFFAEB]/30" />
-              <PixelIcon name="gamepad" size={20} color="#FFD166" />
-              <span className="h-0.5 w-12 sm:w-16 bg-[#FFFAEB]/30" />
-            </div>
-
-            {/* Sección Inferior de 3 Columnas (FOCUS, PERSIST, VICTORY) */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 w-full text-center mt-3 pt-2">
-              {/* Columna 1: Enfoque / Disponibilidad */}
-              <div className="flex flex-col items-center space-y-1 p-2">
-                <PixelIcon name="crosshair" size={24} color="#118AB2" />
-                <h4 className="font-pixel text-xs font-bold uppercase text-neo-pink tracking-wider">
-                  DISPONIBILIDAD
-                </h4>
-                <p className="font-body text-[11px] text-[#FFFAEB]/80 leading-snug">
-                  WebSockets en vivo. Horarios sin recarga.
-                </p>
+            {/* Ventana Retro (Estilo OS Pixel Art de la Referencia) */}
+            <div className="w-full mt-6 border-3 border-[#FFD166] bg-[#FFFAEB] overflow-hidden">
+              {/* Cabecera de la Ventana en #FFD166 */}
+              <div className="bg-[#FFD166] px-3 py-1.5 flex items-center justify-between border-b-2 border-[#073B4C]/20">
+                <div className="flex items-center gap-2">
+                  <span className="font-pixel text-xs font-bold uppercase tracking-wider text-[#073B4C]">
+                    labreserva_system.exe
+                  </span>
+                </div>
+                {/* Botones de Ventana Retro */}
+                <div className="flex items-center gap-1 font-pixel text-xs font-bold">
+                  <span className="w-4 h-4 flex items-center justify-center border border-[#073B4C] bg-[#FFFAEB] text-[#073B4C] text-[10px] leading-none select-none">_</span>
+                  <span className="w-4 h-4 flex items-center justify-center border border-[#073B4C] bg-[#FFFAEB] text-[#073B4C] text-[9px] leading-none select-none">□</span>
+                  <span className="w-4 h-4 flex items-center justify-center border border-[#073B4C] bg-[#EF476F] text-white text-[10px] leading-none select-none">✕</span>
+                </div>
               </div>
 
-              {/* Columna 2: Persistencia / Bloqueo Optimista */}
-              <div className="flex flex-col items-center space-y-1 p-2">
-                <PixelIcon name="heart" size={24} color="#EF476F" />
-                <h4 className="font-pixel text-xs font-bold uppercase text-neo-pink tracking-wider">
-                  ANTI-OVERBOOK
-                </h4>
-                <p className="font-body text-[11px] text-[#FFFAEB]/80 leading-snug">
-                  Bloqueo optimista. Cero dobles reservas.
-                </p>
-              </div>
+              {/* Cuerpo de la Ventana con fondo #FFFAEB y texto #073B4C */}
+              <div className="p-4 sm:p-6 space-y-4 text-[#073B4C]">
+                {/* Divisor Punteado Central con Cruz en Pixel Art */}
+                <div className="w-full flex items-center justify-center gap-2.5 my-1">
+                  <div className="flex items-center gap-1.5">
+                    {Array.from({ length: 10 }).map((_, i) => (
+                      <span key={`l-${i}`} className="w-1.5 h-1.5 bg-[#073B4C]/25" />
+                    ))}
+                  </div>
+                  {/* Cruz Pixel Art en #EF476F */}
+                  <svg width={10} height={10} viewBox="0 0 5 5" className="shrink-0" style={{ shapeRendering: 'crispEdges' }}>
+                    <path d="M0 0h1v1H0zm4 0h1v1H4zm-1 1h1v1H3zm-2 0h1v1H1zm1 1h1v1H2zm-1 1h1v1H1zm2 0h1v1H3zm-3 1h1v1H0zm4 0h1v1H4z" fill="#EF476F" />
+                  </svg>
+                  <div className="flex items-center gap-1.5">
+                    {Array.from({ length: 10 }).map((_, i) => (
+                      <span key={`r-${i}`} className="w-1.5 h-1.5 bg-[#073B4C]/25" />
+                    ))}
+                  </div>
+                </div>
 
-              {/* Columna 3: Eficiencia / BullMQ */}
-              <div className="flex flex-col items-center space-y-1 p-2">
-                <PixelIcon name="trophy" size={24} color="#FFD166" />
-                <h4 className="font-pixel text-xs font-bold uppercase text-neo-pink tracking-wider">
-                  BULLMQ REDIS
-                </h4>
-                <p className="font-body text-[11px] text-[#FFFAEB]/80 leading-snug">
-                  Colas asíncronas. Correos al instante.
-                </p>
-              </div>
-            </div>
+                {/* Lemas y Subtítulos en Dos Líneas (Rojo conservado en #EF476F) */}
+                <div className="text-center font-pixel text-xs sm:text-sm tracking-wider uppercase my-2 space-y-1">
+                  <p className="text-[#073B4C] font-bold">
+                    SISTEMA UNIVERSITARIO DE RESERVAS Y LABORATORIOS.
+                  </p>
+                  <p className="text-neo-pink font-bold tracking-widest text-[11px] sm:text-xs">
+                    CONTROL DE CONCURRENCIA OPTIMISTA · TRANSACCIONES ACID PURAS.
+                  </p>
+                </div>
 
-            {/* Badge / Pill Inferior Enmarcado */}
-            <div className="mt-6 border border-[#FFFAEB]/50 bg-transparent px-4 py-1 text-center">
-              <span className="font-pixel text-[11px] font-bold uppercase tracking-widest text-[#FFFAEB]">
-                LABRESERVA · MDW V1.0 ACID
-              </span>
+                {/* Divisor con Ícono de Gamepad Pixel Art */}
+                <div className="w-full flex items-center justify-center gap-3 my-2">
+                  <span className="h-0.5 w-12 sm:w-16 bg-[#073B4C]/20" />
+                  <PixelIcon name="gamepad" size={20} color="#073B4C" />
+                  <span className="h-0.5 w-12 sm:w-16 bg-[#073B4C]/20" />
+                </div>
+
+                {/* Sección Interior: 3 Columnas (FOCUS, PERSIST, VICTORY) */}
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full text-center mt-2 pt-1 border border-[#073B4C]/15 bg-[#FFFDF5] p-3">
+                  {/* Columna 1: Enfoque / Disponibilidad */}
+                  <div className="flex flex-col items-center space-y-1 p-1">
+                    <PixelIcon name="crosshair" size={24} color="#118AB2" />
+                    <h4 className="font-pixel text-xs font-bold uppercase text-neo-pink tracking-wider">
+                      DISPONIBILIDAD
+                    </h4>
+                    <p className="font-body text-[11px] text-[#073B4C]/80 leading-snug">
+                      WebSockets en vivo. Horarios sin recarga.
+                    </p>
+                  </div>
+
+                  {/* Columna 2: Persistencia / Bloqueo Optimista */}
+                  <div className="flex flex-col items-center space-y-1 p-1 sm:border-x sm:border-[#073B4C]/15">
+                    <PixelIcon name="heart" size={24} color="#EF476F" />
+                    <h4 className="font-pixel text-xs font-bold uppercase text-neo-pink tracking-wider">
+                      ANTI-OVERBOOK
+                    </h4>
+                    <p className="font-body text-[11px] text-[#073B4C]/80 leading-snug">
+                      Bloqueo optimista. Cero dobles reservas.
+                    </p>
+                  </div>
+
+                  {/* Columna 3: Eficiencia / BullMQ */}
+                  <div className="flex flex-col items-center space-y-1 p-1">
+                    <PixelIcon name="trophy" size={24} color="#118AB2" />
+                    <h4 className="font-pixel text-xs font-bold uppercase text-neo-pink tracking-wider">
+                      BULLMQ REDIS
+                    </h4>
+                    <p className="font-body text-[11px] text-[#073B4C]/80 leading-snug">
+                      Colas asíncronas. Correos al instante.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Badge / Pill Inferior Enmarcado */}
+                <div className="mt-3 border-2 border-[#073B4C]/20 bg-[#FFFAEB] px-4 py-1 text-center">
+                  <span className="font-pixel text-[11px] font-bold uppercase tracking-widest text-[#073B4C]">
+                    LABRESERVA · MDW V1.0 ACID
+                  </span>
+                </div>
+              </div>
             </div>
           </div>
         </main>
