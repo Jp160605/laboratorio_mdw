@@ -357,7 +357,7 @@ export default function AdminPage() {
                   value={nuevoNombre}
                   onChange={(e) => setNuevoNombre(e.target.value)}
                   placeholder="Ej. Lab de Inteligencia Artificial"
-                  className="mt-1 w-full border-2 border-[#dd6902] bg-[#ffdf88] p-2.5 font-pixel text-xs font-bold text-[#073B4C] focus:bg-[#ffb220]/30 focus:outline-none"
+                  className="mt-1 w-full border-2 border-[#dd6902] bg-[#fef3c7] p-2.5 font-pixel text-xs font-bold text-[#073B4C] focus:bg-[#fef3c7] focus:outline-none"
                   required
                 />
               </div>
@@ -372,7 +372,7 @@ export default function AdminPage() {
                   max={200}
                   value={nuevaCapacidad}
                   onChange={(e) => setNuevaCapacidad(Number(e.target.value))}
-                  className="mt-1 w-full border-2 border-[#dd6902] bg-[#ffdf88] p-2.5 font-pixel text-xs font-bold text-[#073B4C] focus:bg-[#ffb220]/30 focus:outline-none"
+                  className="mt-1 w-full border-2 border-[#dd6902] bg-[#fef3c7] p-2.5 font-pixel text-xs font-bold text-[#073B4C] focus:bg-[#fef3c7] focus:outline-none"
                   required
                 />
               </div>
@@ -386,7 +386,7 @@ export default function AdminPage() {
                   value={nuevaUbicacion}
                   onChange={(e) => setNuevaUbicacion(e.target.value)}
                   placeholder="Ej. Edificio B - 3er Piso"
-                  className="mt-1 w-full border-2 border-[#dd6902] bg-[#ffdf88] p-2.5 font-pixel text-xs font-bold text-[#073B4C] focus:bg-[#ffb220]/30 focus:outline-none"
+                  className="mt-1 w-full border-2 border-[#dd6902] bg-[#fef3c7] p-2.5 font-pixel text-xs font-bold text-[#073B4C] focus:bg-[#fef3c7] focus:outline-none"
                   required
                 />
               </div>

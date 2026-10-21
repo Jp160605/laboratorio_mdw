@@ -18,7 +18,7 @@ const config: Config = {
       },
       fontFamily: {
         pixel: ['var(--font-pixel)', 'monospace'],
-        body: ['var(--font-body)', 'sans-serif'],
+        body: ['var(--font-body)', 'monospace', 'sans-serif'],
       },
       boxShadow: {
         'neo-sm': 'none',

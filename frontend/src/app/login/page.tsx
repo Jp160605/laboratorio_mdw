@@ -100,7 +100,7 @@ export default function LoginPage() {
                   <label className="block font-pixel text-xs font-bold uppercase text-[#073B4C]">
                     {'//'} Nombre Completo
                   </label>
-                  <div className="mt-1 flex items-center border-2 border-[#dd6902] bg-[#ffdf88] px-3 py-2 focus-within:bg-[#ffb220]/25">
+                  <div className="mt-1 flex items-center border-2 border-[#dd6902] bg-[#fef3c7] px-3 py-2 focus-within:bg-[#fef3c7]">
                     <PixelIcon name="user" size={16} className="text-[#073B4C] mr-2" />
                     <input
                       type="text"
@@ -118,7 +118,7 @@ export default function LoginPage() {
                 <label className="block font-pixel text-xs font-bold uppercase text-[#073B4C]">
                   {'//'} Correo Institucional
                 </label>
-                <div className="mt-1 flex items-center border-2 border-[#dd6902] bg-[#ffdf88] px-3 py-2 focus-within:bg-[#ffb220]/25">
+                <div className="mt-1 flex items-center border-2 border-[#dd6902] bg-[#fef3c7] px-3 py-2 focus-within:bg-[#fef3c7]">
                   <span className="font-pixel text-xs font-bold text-[#073B4C] mr-2">@</span>
                   <input
                     type="email"
@@ -140,7 +140,7 @@ export default function LoginPage() {
                     ¿Olvidaste tu contraseña?
                   </a>
                 </div>
-                <div className="mt-1 flex items-center border-2 border-[#dd6902] bg-[#ffdf88] px-3 py-2 focus-within:bg-[#ffb220]/25">
+                <div className="mt-1 flex items-center border-2 border-[#dd6902] bg-[#fef3c7] px-3 py-2 focus-within:bg-[#fef3c7]">
                   <PixelIcon name="lock" size={16} className="text-[#073B4C] mr-2" />
                   <input
                     type="password"
@@ -161,7 +161,7 @@ export default function LoginPage() {
                   <select
                     value={rol}
                     onChange={(e) => setRol(e.target.value as 'ALUMNO' | 'ADMINISTRADOR')}
-                    className="mt-1 w-full border-2 border-[#dd6902] bg-[#ffdf88] p-2 font-pixel text-xs font-bold text-[#073B4C] focus:bg-[#ffb220]/25 focus:outline-none"
+                    className="mt-1 w-full border-2 border-[#dd6902] bg-[#fef3c7] p-2 font-pixel text-xs font-bold text-[#073B4C] focus:bg-[#fef3c7] focus:outline-none"
                   >
                     <option value="ALUMNO">Alumno (Reservas y Consultas)</option>
                     <option value="ADMINISTRADOR">Administrador (Gestión de Salas y Métricas)</option>

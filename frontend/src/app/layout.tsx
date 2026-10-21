@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DotGothic16, Questrial } from "next/font/google";
+import { DotGothic16, VT323 } from "next/font/google";
 import { ReservasProvider } from "@/context/ReservasContext";
 import NotificationDrawer from "@/components/NotificationDrawer";
 import PixelSkyBackground from "@/components/PixelSkyBackground";
@@ -12,7 +12,7 @@ const dotGothic = DotGothic16({
   display: "swap",
 });
 
-const questrial = Questrial({
+const vt323 = VT323({
   weight: "400",
   subsets: ["latin"],
   variable: "--font-body",
@@ -30,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es" className={`${dotGothic.variable} ${questrial.variable}`}>
+    <html lang="es" className={`${dotGothic.variable} ${vt323.variable}`}>
       <body className="font-body text-neo-dark antialiased selection:bg-neo-yellow selection:text-neo-dark relative min-h-screen">
         <PixelSkyBackground />
         <ReservasProvider>

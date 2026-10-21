@@ -103,7 +103,7 @@ export default function ModalAuth({
               <label className="block font-pixel text-xs font-bold uppercase text-[#073B4C]">
                 {'//'} Nombre Completo
               </label>
-              <div className="mt-1 flex items-center border-2 border-[#0284c7] bg-[#bae6fd] px-2.5 py-1.5 focus-within:bg-[#38bdf8]/40">
+              <div className="mt-1 flex items-center border-2 border-[#0284c7] bg-[#e0f2fe] px-2.5 py-1.5 focus-within:bg-[#e0f2fe]">
                 <PixelIcon name="user" size={16} className="text-[#073B4C] mr-2" />
                 <input
                   type="text"
@@ -121,7 +121,7 @@ export default function ModalAuth({
             <label className="block font-pixel text-xs font-bold uppercase text-[#073B4C]">
               {'//'} Correo Institucional
             </label>
-            <div className="mt-1 flex items-center border-2 border-[#0284c7] bg-[#bae6fd] px-2.5 py-1.5 focus-within:bg-[#38bdf8]/40">
+            <div className="mt-1 flex items-center border-2 border-[#0284c7] bg-[#e0f2fe] px-2.5 py-1.5 focus-within:bg-[#e0f2fe]">
               <span className="font-pixel text-xs font-bold text-[#073B4C] mr-2">@</span>
               <input
                 type="email"
@@ -138,7 +138,7 @@ export default function ModalAuth({
             <label className="block font-pixel text-xs font-bold uppercase text-[#073B4C]">
               {'//'} Contraseña
             </label>
-            <div className="mt-1 flex items-center border-2 border-[#0284c7] bg-[#bae6fd] px-2.5 py-1.5 focus-within:bg-[#38bdf8]/40">
+            <div className="mt-1 flex items-center border-2 border-[#0284c7] bg-[#e0f2fe] px-2.5 py-1.5 focus-within:bg-[#e0f2fe]">
               <PixelIcon name="lock" size={16} className="text-[#073B4C] mr-2" />
               <input
                 type="password"
