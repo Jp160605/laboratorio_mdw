@@ -50,7 +50,7 @@ export default function ReservasPage() {
               <span className="text-[#06D6A0]">DISPONIBILIDAD_HORARIA</span>
             </div>
             <h1 className="font-pixel text-2xl sm:text-3xl font-bold uppercase text-white">
-              Bienvenido(a), <span className="bg-neo-yellow text-neo-dark px-2 border-2 border-neo-dark">{usuarioActual ? usuarioActual.nombre : 'Invitado'}</span>
+              Bienvenido(a), <span className="bg-[#ffb220] text-[#073B4C] px-2 border-2 border-[#dd6902]">{usuarioActual ? usuarioActual.nombre : 'Invitado'}</span>
             </h1>
             <p className="mt-1 font-body text-xs text-[#FFFAEB]/85">
               Explora las salas por horario, revisa la versión de cada espacio y agenda bloques con control de concurrencia optimista.

@@ -53,18 +53,18 @@ export default function AdminPage() {
       <Navbar />
 
       <main className="flex-1 mx-auto max-w-7xl p-4 sm:p-6 lg:p-8 space-y-6">
-        {/* Banner de Cabecera de Administrador */}
-        <div className="border-3 border-neo-dark bg-neo-yellow p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        {/* Banner de Cabecera de Administrador (Tema Amarillo) */}
+        <div className="border-4 border-[#dd6902] bg-[#ffdf88] p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-[#073B4C]">
           <div>
-            <div className="flex items-center gap-2 font-pixel text-xs font-bold text-neo-dark/80 mb-1">
+            <div className="flex items-center gap-2 font-pixel text-xs font-bold text-[#dd6902] mb-1">
               <span>ADMIN_CONSOLE.ROOT</span>
               <span>{'//'}</span>
-              <span className="text-neo-blue">CONTROL_GLOBAL</span>
+              <span className="text-[#118AB2]">CONTROL_GLOBAL</span>
             </div>
-            <h1 className="font-pixel text-2xl sm:text-3xl font-bold uppercase text-neo-dark tracking-tight">
+            <h1 className="font-pixel text-2xl sm:text-3xl font-bold uppercase text-[#073B4C] tracking-tight">
               Panel de Administración y Control ACID
             </h1>
-            <p className="mt-1 font-body text-xs text-neo-dark/90">
+            <p className="mt-1 font-body text-xs text-[#073B4C]/85">
               Gestión de inventario de salas, auditoría de transacciones concurrentes y monitor de colas BullMQ.
             </p>
           </div>
@@ -93,60 +93,64 @@ export default function AdminPage() {
           </div>
         </div>
 
-        {/* Métricas Globales del Middleware */}
+        {/* Métricas Globales del Middleware en Tarjetas Retro (Azul, Amarillo, Rojo, Azul) */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="p-4 border-2 border-[#FFFAEB]/20 bg-[#073B4C]/40 backdrop-blur-sm">
-            <span className="font-pixel text-[11px] font-bold text-neo-blue uppercase block">
+          {/* Card 1: Azul */}
+          <div className="p-4 border-4 border-[#0284c7] bg-[#bae6fd] text-[#073B4C]">
+            <span className="font-pixel text-[11px] font-bold text-[#0284c7] uppercase block">
               {'//'} Espacios Registrados
             </span>
             <div className="mt-2 flex items-baseline justify-between">
-              <span className="font-pixel text-3xl font-bold text-white">{salas.length}</span>
-              <span className="font-pixel text-xs text-white/60 font-bold">SALAS</span>
+              <span className="font-pixel text-3xl font-bold text-[#073B4C]">{salas.length}</span>
+              <span className="font-pixel text-xs text-[#073B4C]/70 font-bold">SALAS</span>
             </div>
           </div>
 
-          <div className="p-4 border-2 border-[#FFFAEB]/20 bg-[#073B4C]/40 backdrop-blur-sm">
-            <span className="font-pixel text-[11px] font-bold text-neo-green uppercase block">
+          {/* Card 2: Amarillo */}
+          <div className="p-4 border-4 border-[#dd6902] bg-[#ffdf88] text-[#073B4C]">
+            <span className="font-pixel text-[11px] font-bold text-[#dd6902] uppercase block">
               {'//'} Reservas Totales
             </span>
             <div className="mt-2 flex items-baseline justify-between">
-              <span className="font-pixel text-3xl font-bold text-white">{reservas.length}</span>
-              <span className="font-pixel text-xs text-neo-green font-bold">
+              <span className="font-pixel text-3xl font-bold text-[#073B4C]">{reservas.length}</span>
+              <span className="font-pixel text-xs text-[#06D6A0] bg-[#073B4C] px-1.5 py-0.5 font-bold">
                 {reservas.filter((r) => r.estado === 'CONFIRMADA').length} ACTIVAS
               </span>
             </div>
           </div>
 
-          <div className="p-4 border-2 border-[#FFFAEB]/20 bg-[#073B4C]/40 backdrop-blur-sm">
-            <span className="font-pixel text-[11px] font-bold text-neo-pink uppercase block">
+          {/* Card 3: Rojo */}
+          <div className="p-4 border-4 border-[#e11d48] bg-[#fecdd3] text-[#073B4C]">
+            <span className="font-pixel text-[11px] font-bold text-[#e11d48] uppercase block">
               {'//'} Suma Bloqueos Optimistas
             </span>
             <div className="mt-2 flex items-baseline justify-between">
-              <span className="font-pixel text-3xl font-bold text-white">
+              <span className="font-pixel text-3xl font-bold text-[#073B4C]">
                 v.{salas.reduce((acc, s) => acc + s.version, 0)}
               </span>
-              <span className="font-pixel text-xs text-neo-pink font-bold">VERSION SUM</span>
+              <span className="font-pixel text-xs text-[#e11d48] font-bold">VERSION SUM</span>
             </div>
           </div>
 
-          <div className="p-4 border-2 border-[#FFFAEB]/20 bg-[#073B4C]/40 backdrop-blur-sm">
-            <span className="font-pixel text-[11px] font-bold text-neo-yellow uppercase block">
+          {/* Card 4: Azul */}
+          <div className="p-4 border-4 border-[#0284c7] bg-[#bae6fd] text-[#073B4C]">
+            <span className="font-pixel text-[11px] font-bold text-[#0284c7] uppercase block">
               {'//'} Trabajos en BullMQ
             </span>
             <div className="mt-2 flex items-baseline justify-between">
-              <span className="font-pixel text-3xl font-bold text-white">
+              <span className="font-pixel text-3xl font-bold text-[#073B4C]">
                 {notificaciones.length}
               </span>
-              <span className="font-pixel text-xs text-neo-blue font-bold">JOBS REDIS</span>
+              <span className="font-pixel text-xs text-[#0284c7] font-bold">JOBS REDIS</span>
             </div>
           </div>
         </div>
 
-        {/* Sección 1: Gestión de Espacios y Salas */}
+        {/* Sección 1: Gestión de Espacios y Salas (Ventana Azul) */}
         <RetroWindow
           title="INVENTARIO_SALAS.DAT"
           badge="CATALOGO"
-          headerColor="blue"
+          color="blue"
           actionButton={
             <PixelButton
               variant="warning"
@@ -161,7 +165,7 @@ export default function AdminPage() {
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-left font-body text-xs">
               <thead>
-                <tr className="border-b-2 border-neo-dark bg-neo-dark text-neo-bg font-pixel text-xs">
+                <tr className="border-b-[3px] border-[#0284c7] bg-[#38bdf8] text-[#073B4C] font-pixel text-xs">
                   <th className="p-3">ID</th>
                   <th className="p-3">Nombre del Espacio</th>
                   <th className="p-3">Capacidad</th>
@@ -170,17 +174,17 @@ export default function AdminPage() {
                   <th className="p-3 text-right">Acciones</th>
                 </tr>
               </thead>
-              <tbody className="divide-y-2 divide-neo-dark/20">
+              <tbody className="divide-y-2 divide-[#0284c7]/25 text-[#073B4C]">
                 {salas.map((sala) => (
-                  <tr key={sala.id} className="hover:bg-[#FFFDF5]">
+                  <tr key={sala.id} className="hover:bg-[#38bdf8]/20 transition-colors">
                     <td className="p-3 font-pixel font-bold">#{sala.id}</td>
-                    <td className="p-3 font-pixel text-sm font-bold text-neo-dark">
+                    <td className="p-3 font-pixel text-sm font-bold text-[#073B4C]">
                       {sala.nombre}
                     </td>
                     <td className="p-3 font-bold">{sala.capacidad} pers.</td>
-                    <td className="p-3 text-neo-dark/80">{sala.ubicacion}</td>
+                    <td className="p-3 text-[#073B4C]/80">{sala.ubicacion}</td>
                     <td className="p-3">
-                      <span className="border-2 border-neo-dark bg-neo-yellow px-2 py-0.5 font-pixel text-xs font-bold text-neo-dark">
+                      <span className="border-2 border-[#0284c7] bg-[#bae6fd] px-2 py-0.5 font-pixel text-xs font-bold text-[#073B4C]">
                         v.{sala.version}
                       </span>
                     </td>
@@ -188,7 +192,7 @@ export default function AdminPage() {
                       <button
                         type="button"
                         onClick={() => eliminarSala(sala.id)}
-                        className="border-2 border-neo-dark bg-neo-pink px-2.5 py-1 font-pixel text-[11px] font-bold text-white hover:bg-[#d8355c]"
+                        className="border-2 border-[#e11d48] bg-[#fb7185] px-2.5 py-1 font-pixel text-[11px] font-bold text-white hover:bg-[#e11d48] transition-colors"
                       >
                         Eliminar
                       </button>
@@ -200,31 +204,31 @@ export default function AdminPage() {
           </div>
         </RetroWindow>
 
-        {/* Sección 2: Auditoría Global de Reservas */}
+        {/* Sección 2: Auditoría Global de Reservas (Ventana Roja) */}
         <RetroWindow
           title="AUDITORIA_GLOBAL_RESERVAS.LOG"
           badge="RF-07"
-          headerColor="green"
+          color="red"
           actionButton={
             <div className="flex items-center gap-1 font-pixel text-xs">
               <button
                 type="button"
                 onClick={() => setFiltroEstado('TODAS')}
-                className={`px-2 py-0.5 border border-neo-dark ${filtroEstado === 'TODAS' ? 'bg-neo-blue text-white' : 'bg-transparent text-neo-dark'}`}
+                className={`px-2 py-0.5 border ${filtroEstado === 'TODAS' ? 'bg-[#fb7185] text-[#073B4C] border-2 border-[#e11d48] font-bold' : 'bg-[#fecdd3] text-[#073B4C]/70 border-[#e11d48]/40 hover:bg-[#fb7185]/30'}`}
               >
                 Todas
               </button>
               <button
                 type="button"
                 onClick={() => setFiltroEstado('CONFIRMADA')}
-                className={`px-2 py-0.5 border border-neo-dark ${filtroEstado === 'CONFIRMADA' ? 'bg-neo-green text-neo-dark' : 'bg-transparent text-neo-dark'}`}
+                className={`px-2 py-0.5 border ${filtroEstado === 'CONFIRMADA' ? 'bg-[#fb7185] text-[#073B4C] border-2 border-[#e11d48] font-bold' : 'bg-[#fecdd3] text-[#073B4C]/70 border-[#e11d48]/40 hover:bg-[#fb7185]/30'}`}
               >
                 Confirmadas
               </button>
               <button
                 type="button"
                 onClick={() => setFiltroEstado('CANCELADA')}
-                className={`px-2 py-0.5 border border-neo-dark ${filtroEstado === 'CANCELADA' ? 'bg-neo-pink text-white' : 'bg-transparent text-neo-dark'}`}
+                className={`px-2 py-0.5 border ${filtroEstado === 'CANCELADA' ? 'bg-[#fb7185] text-[#073B4C] border-2 border-[#e11d48] font-bold' : 'bg-[#fecdd3] text-[#073B4C]/70 border-[#e11d48]/40 hover:bg-[#fb7185]/30'}`}
               >
                 Canceladas
               </button>
@@ -234,7 +238,7 @@ export default function AdminPage() {
           <div className="overflow-x-auto">
             <table className="w-full border-collapse text-left font-body text-xs">
               <thead>
-                <tr className="border-b-2 border-neo-dark bg-[#FFF3D6] font-pixel text-xs text-neo-dark">
+                <tr className="border-b-[3px] border-[#e11d48] bg-[#fb7185] font-pixel text-xs text-[#073B4C]">
                   <th className="p-3">ID</th>
                   <th className="p-3">Espacio</th>
                   <th className="p-3">Usuario</th>
@@ -244,17 +248,17 @@ export default function AdminPage() {
                   <th className="p-3">Estado</th>
                 </tr>
               </thead>
-              <tbody className="divide-y-2 divide-neo-dark/20">
+              <tbody className="divide-y-2 divide-[#e11d48]/25 text-[#073B4C]">
                 {reservasFiltradas.map((r) => (
-                  <tr key={r.id} className="hover:bg-[#FFFDF5]">
+                  <tr key={r.id} className="hover:bg-[#fb7185]/20 transition-colors">
                     <td className="p-3 font-pixel font-bold">#{r.id}</td>
-                    <td className="p-3 font-pixel text-xs font-bold text-neo-dark">{r.sala_nombre || `#${r.sala_id}`}</td>
+                    <td className="p-3 font-pixel text-xs font-bold text-[#073B4C]">{r.sala_nombre || `#${r.sala_id}`}</td>
                     <td className="p-3 font-semibold">{r.usuario_nombre || `#${r.usuario_id}`}</td>
                     <td className="p-3 font-pixel font-bold">{r.fecha}</td>
                     <td className="p-3 font-pixel">
                       {r.hora_inicio}:00 - {r.hora_fin}:00
                     </td>
-                    <td className="p-3 font-pixel text-neo-blue font-bold">v.{r.version_sala_aplicada}</td>
+                    <td className="p-3 font-pixel text-[#0284c7] font-bold">v.{r.version_sala_aplicada}</td>
                     <td className="p-3">
                       <PixelBadge
                         variant={r.estado === 'CONFIRMADA' ? 'green' : 'pink'}
@@ -271,46 +275,46 @@ export default function AdminPage() {
           </div>
         </RetroWindow>
 
-        {/* Sección 3: Monitor de Cola BullMQ y Notificaciones */}
+        {/* Sección 3: Monitor de Cola BullMQ y Notificaciones (Ventana Amarilla) */}
         <RetroWindow
           title="MONITOR_COLAS_BULLMQ_REDIS.SYS"
           badge="WORKER_STATUS"
-          headerColor="cream"
+          color="yellow"
           actionButton={
             <button
               type="button"
               onClick={limpiarNotificaciones}
-              className="font-pixel text-xs text-neo-pink underline hover:text-[#d8355c]"
+              className="font-pixel text-xs text-[#dd6902] underline hover:text-[#b05202]"
             >
               Vaciar Cola
             </button>
           }
         >
           {notificaciones.length === 0 ? (
-            <div className="p-8 text-center border-2 border-dashed border-neo-dark/30">
-              <PixelIcon name="terminal" size={28} className="text-neo-dark/40 mb-1" />
-              <p className="font-pixel text-xs font-bold uppercase text-neo-dark/70">
+            <div className="p-8 text-center border-2 border-dashed border-[#dd6902]/30 bg-[#ffb220]/15 text-[#073B4C]">
+              <PixelIcon name="terminal" size={28} className="text-[#dd6902] mb-1 inline-block" />
+              <p className="font-pixel text-xs font-bold uppercase text-[#073B4C]">
                 Cola BullMQ en reposo (0 jobs pendientes)
               </p>
-              <p className="font-body text-xs text-neo-dark/60 mt-1">
+              <p className="font-body text-xs text-[#073B4C]/75 mt-1">
                 Realiza una reserva en la pestaña de Disponibilidad para observar los correos programados e inmediatos.
               </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {notificaciones.map((n) => (
-                <div key={n.id} className="p-3">
-                  <div className="flex items-center justify-between border-b border-neo-dark/20 pb-1.5">
+                <div key={n.id} className="p-3 border-2 border-[#dd6902] bg-[#ffb220]/25 text-[#073B4C]">
+                  <div className="flex items-center justify-between border-b border-[#dd6902]/30 pb-1.5">
                     <PixelBadge variant={n.cola === 'correo-inmediato' ? 'green' : 'blue'} size="sm">
                       {n.cola}
                     </PixelBadge>
-                    <span className="font-pixel text-[10px] text-neo-dark/60 font-bold">{n.jobId}</span>
+                    <span className="font-pixel text-[10px] text-[#073B4C]/70 font-bold">{n.jobId}</span>
                   </div>
-                  <h4 className="mt-2 font-pixel text-xs font-bold text-neo-dark leading-tight">{n.asunto}</h4>
-                  <p className="mt-1 font-body text-xs text-neo-dark/80 p-2">{n.cuerpo}</p>
-                  <div className="mt-2 flex items-center justify-between font-pixel text-[10px] text-neo-dark/70">
+                  <h4 className="mt-2 font-pixel text-xs font-bold text-[#073B4C] leading-tight">{n.asunto}</h4>
+                  <p className="mt-1 font-body text-xs text-[#073B4C]/90 p-2 border border-[#dd6902]/20 bg-[#ffdf88]">{n.cuerpo}</p>
+                  <div className="mt-2 flex items-center justify-between font-pixel text-[10px] text-[#073B4C]/70">
                     <span>Para: {n.destinatario}</span>
-                    <span className="text-neo-pink font-bold">{n.delay}</span>
+                    <span className="text-[#e11d48] font-bold">{n.delay}</span>
                   </div>
                 </div>
               ))}
@@ -319,26 +323,33 @@ export default function AdminPage() {
         </RetroWindow>
       </main>
 
-      {/* Modal para Crear Nueva Sala */}
+      {/* Modal para Crear Nueva Sala (Ventana Flotante Amarilla) */}
       {modalNuevaSala && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-neo-dark/70 p-4">
-          <div className="w-full max-w-md border-3 border-neo-dark bg-[#FFFAEB]">
-            <div className="flex items-center justify-between border-b-3 border-neo-dark bg-neo-yellow px-4 py-2.5">
-              <span className="font-pixel text-xs font-bold uppercase tracking-wider text-neo-dark">
-                CREAR_ESPACIO.SYS
-              </span>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-none">
+          <div className="w-full max-w-md border-4 border-[#dd6902] bg-[#ffdf88] overflow-hidden text-[#073B4C] shadow-2xl animate-in fade-in zoom-in-95 duration-100">
+            <div className="flex items-center justify-between border-b-[3px] border-[#dd6902] bg-[#ffb220] px-3.5 py-2.5">
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5 shrink-0">
+                  <span className="inline-block h-3 w-3 rounded-full bg-[#EF476F] border border-[#dd6902]" />
+                  <span className="inline-block h-3 w-3 rounded-full bg-[#FFD166] border border-[#dd6902]" />
+                  <span className="inline-block h-3 w-3 rounded-full bg-[#118AB2] border border-[#dd6902]" />
+                </div>
+                <span className="font-pixel text-xs font-bold uppercase tracking-wider text-[#073B4C] ml-1.5">
+                  CREAR_ESPACIO.SYS
+                </span>
+              </div>
               <button
                 type="button"
                 onClick={() => setModalNuevaSala(false)}
-                className="flex h-6 w-6 items-center justify-center border-2 border-neo-dark bg-neo-pink text-white font-pixel font-bold"
+                className="flex h-4 w-4 items-center justify-center border-2 border-[#dd6902] bg-[#EF476F] text-white font-pixel font-bold text-[10px] leading-none hover:brightness-110 active:scale-95 transition-transform"
               >
-                ×
+                ✕
               </button>
             </div>
 
-            <form onSubmit={handleCrearSalaSubmit} className="space-y-4 p-5">
+            <form onSubmit={handleCrearSalaSubmit} className="space-y-4 p-5 text-[#073B4C]">
               <div>
-                <label className="block font-pixel text-xs font-bold uppercase text-neo-dark">
+                <label className="block font-pixel text-xs font-bold uppercase text-[#073B4C]">
                   {'//'} Nombre del Laboratorio o Sala
                 </label>
                 <input
@@ -346,13 +357,13 @@ export default function AdminPage() {
                   value={nuevoNombre}
                   onChange={(e) => setNuevoNombre(e.target.value)}
                   placeholder="Ej. Lab de Inteligencia Artificial"
-                  className="mt-1 w-full border-2 border-neo-dark bg-transparent p-2.5 font-pixel text-xs font-bold text-neo-dark focus:bg-neo-yellow/20 focus:outline-none"
+                  className="mt-1 w-full border-2 border-[#dd6902] bg-[#ffdf88] p-2.5 font-pixel text-xs font-bold text-[#073B4C] focus:bg-[#ffb220]/30 focus:outline-none"
                   required
                 />
               </div>
 
               <div>
-                <label className="block font-pixel text-xs font-bold uppercase text-neo-dark">
+                <label className="block font-pixel text-xs font-bold uppercase text-[#073B4C]">
                   {'//'} Capacidad Máxima (Aforo)
                 </label>
                 <input
@@ -361,13 +372,13 @@ export default function AdminPage() {
                   max={200}
                   value={nuevaCapacidad}
                   onChange={(e) => setNuevaCapacidad(Number(e.target.value))}
-                  className="mt-1 w-full border-2 border-neo-dark bg-transparent p-2.5 font-pixel text-xs font-bold text-neo-dark focus:bg-neo-yellow/20 focus:outline-none"
+                  className="mt-1 w-full border-2 border-[#dd6902] bg-[#ffdf88] p-2.5 font-pixel text-xs font-bold text-[#073B4C] focus:bg-[#ffb220]/30 focus:outline-none"
                   required
                 />
               </div>
 
               <div>
-                <label className="block font-pixel text-xs font-bold uppercase text-neo-dark">
+                <label className="block font-pixel text-xs font-bold uppercase text-[#073B4C]">
                   {'//'} Ubicación en Campus
                 </label>
                 <input
@@ -375,20 +386,20 @@ export default function AdminPage() {
                   value={nuevaUbicacion}
                   onChange={(e) => setNuevaUbicacion(e.target.value)}
                   placeholder="Ej. Edificio B - 3er Piso"
-                  className="mt-1 w-full border-2 border-neo-dark bg-transparent p-2.5 font-pixel text-xs font-bold text-neo-dark focus:bg-neo-yellow/20 focus:outline-none"
+                  className="mt-1 w-full border-2 border-[#dd6902] bg-[#ffdf88] p-2.5 font-pixel text-xs font-bold text-[#073B4C] focus:bg-[#ffb220]/30 focus:outline-none"
                   required
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 border-t-2 border-neo-dark/20 pt-3">
-                <PixelButton
+              {/* Botón CTA -> VERDE #06D6A0 */}
+              <div className="flex items-center justify-end gap-3 border-t-[3px] border-[#dd6902] bg-[#ffb220]/25 pt-3 -mx-5 -mb-5 px-5 pb-4">
+                <button
                   type="button"
-                  variant="ghost"
-                  size="sm"
                   onClick={() => setModalNuevaSala(false)}
+                  className="border-2 border-[#dd6902] bg-transparent px-3 py-1.5 font-pixel text-xs font-bold uppercase text-[#073B4C] hover:bg-[#ffb220]/50 transition-colors"
                 >
                   Cancelar
-                </PixelButton>
+                </button>
                 <PixelButton
                   type="submit"
                   variant="success"

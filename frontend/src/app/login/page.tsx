@@ -43,40 +43,39 @@ export default function LoginPage() {
 
       <main className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
         <div className="w-full max-w-lg space-y-6">
-          {/* Tarjeta de Inicio de Sesión (Del Figma: Login #8:814) */}
+          {/* Tarjeta de Inicio de Sesión (Ventana Retro Amarilla) */}
           <RetroWindow
             title="SISTEMA_ACCESO_AUTH.EXE"
             badge="JWT_SESSION"
-            headerColor="yellow"
-            className="bg-[#FFFAEB]"
+            color="yellow"
           >
             {/* Header del Formulario */}
-            <div className="border-b-2 border-neo-dark pb-4 mb-4">
+            <div className="border-b-2 border-[#dd6902]/30 pb-4 mb-4 text-[#073B4C]">
               <div className="flex items-center gap-2 mb-1">
                 <PixelBadge variant="pink" size="sm">
                   PORTAL UNIVERSITARIO
                 </PixelBadge>
-                <span className="font-pixel text-xs text-neo-dark/70 font-bold">
+                <span className="font-pixel text-xs text-[#073B4C]/70 font-bold">
                   {'//'} RF-01
                 </span>
               </div>
-              <h1 className="font-pixel text-3xl font-bold uppercase text-neo-dark tracking-tight">
+              <h1 className="font-pixel text-3xl font-bold uppercase text-[#073B4C] tracking-tight">
                 {modo === 'login' ? 'Inicia Sesión' : 'Crea tu Cuenta'}
               </h1>
-              <p className="mt-1 font-body text-xs text-neo-dark/80">
+              <p className="mt-1 font-body text-xs text-[#073B4C]/85">
                 Accede al sistema para consultar horarios, apartar salas y gestionar tus reservas universitarias.
               </p>
             </div>
 
             {/* Alternador de Modo */}
-            <div className="flex border-2 border-neo-dark mb-5 overflow-hidden">
+            <div className="flex border-2 border-[#dd6902] mb-5 overflow-hidden">
               <button
                 type="button"
                 onClick={() => setModo('login')}
                 className={`flex-1 py-2 font-pixel text-xs font-bold uppercase transition-all ${
                   modo === 'login'
-                    ? 'bg-neo-blue text-white'
-                    : 'text-neo-dark/70 hover:bg-neo-yellow'
+                    ? 'bg-[#ffb220] text-[#073B4C] border-b-2 border-[#dd6902]'
+                    : 'bg-[#ffdf88] text-[#073B4C]/70 hover:bg-[#ffb220]/40'
                 }`}
               >
                 1. Iniciar Sesión
@@ -86,8 +85,8 @@ export default function LoginPage() {
                 onClick={() => setModo('registro')}
                 className={`flex-1 py-2 font-pixel text-xs font-bold uppercase transition-all ${
                   modo === 'registro'
-                    ? 'bg-neo-blue text-white'
-                    : 'text-neo-dark/70 hover:bg-neo-yellow'
+                    ? 'bg-[#ffb220] text-[#073B4C] border-b-2 border-[#dd6902]'
+                    : 'bg-[#ffdf88] text-[#073B4C]/70 hover:bg-[#ffb220]/40'
                 }`}
               >
                 2. Registrarse
@@ -95,20 +94,20 @@ export default function LoginPage() {
             </div>
 
             {/* Formulario */}
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4 text-[#073B4C]">
               {modo === 'registro' && (
                 <div>
-                  <label className="block font-pixel text-xs font-bold uppercase text-neo-dark">
+                  <label className="block font-pixel text-xs font-bold uppercase text-[#073B4C]">
                     {'//'} Nombre Completo
                   </label>
-                  <div className="mt-1 flex items-center border-2 border-neo-dark bg-transparent px-3 py-2 focus-within:bg-neo-yellow/20">
-                    <PixelIcon name="user" size={16} className="text-neo-dark mr-2" />
+                  <div className="mt-1 flex items-center border-2 border-[#dd6902] bg-[#ffdf88] px-3 py-2 focus-within:bg-[#ffb220]/25">
+                    <PixelIcon name="user" size={16} className="text-[#073B4C] mr-2" />
                     <input
                       type="text"
                       value={nombre}
                       onChange={(e) => setNombre(e.target.value)}
                       placeholder="Ej. Mariana López"
-                      className="w-full font-body text-xs text-neo-dark outline-none bg-transparent"
+                      className="w-full font-body text-xs text-[#073B4C] outline-none bg-transparent placeholder-[#073B4C]/50 font-medium"
                       required
                     />
                   </div>
@@ -116,17 +115,17 @@ export default function LoginPage() {
               )}
 
               <div>
-                <label className="block font-pixel text-xs font-bold uppercase text-neo-dark">
+                <label className="block font-pixel text-xs font-bold uppercase text-[#073B4C]">
                   {'//'} Correo Institucional
                 </label>
-                <div className="mt-1 flex items-center border-2 border-neo-dark bg-transparent px-3 py-2 focus-within:bg-neo-yellow/20">
-                  <span className="font-pixel text-xs font-bold text-neo-dark mr-2">@</span>
+                <div className="mt-1 flex items-center border-2 border-[#dd6902] bg-[#ffdf88] px-3 py-2 focus-within:bg-[#ffb220]/25">
+                  <span className="font-pixel text-xs font-bold text-[#073B4C] mr-2">@</span>
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="usuario@universidad.edu"
-                    className="w-full font-body text-xs text-neo-dark outline-none bg-transparent"
+                    className="w-full font-body text-xs text-[#073B4C] outline-none bg-transparent placeholder-[#073B4C]/50 font-medium"
                     required
                   />
                 </div>
@@ -134,21 +133,21 @@ export default function LoginPage() {
 
               <div>
                 <div className="flex items-center justify-between">
-                  <label className="block font-pixel text-xs font-bold uppercase text-neo-dark">
+                  <label className="block font-pixel text-xs font-bold uppercase text-[#073B4C]">
                     {'//'} Contraseña
                   </label>
-                  <a href="#" className="font-body text-[11px] text-neo-blue hover:underline">
+                  <a href="#" className="font-body text-[11px] text-[#118AB2] hover:underline">
                     ¿Olvidaste tu contraseña?
                   </a>
                 </div>
-                <div className="mt-1 flex items-center border-2 border-neo-dark bg-transparent px-3 py-2 focus-within:bg-neo-yellow/20">
-                  <PixelIcon name="lock" size={16} className="text-neo-dark mr-2" />
+                <div className="mt-1 flex items-center border-2 border-[#dd6902] bg-[#ffdf88] px-3 py-2 focus-within:bg-[#ffb220]/25">
+                  <PixelIcon name="lock" size={16} className="text-[#073B4C] mr-2" />
                   <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
-                    className="w-full font-body text-xs text-neo-dark outline-none bg-transparent"
+                    className="w-full font-body text-xs text-[#073B4C] outline-none bg-transparent placeholder-[#073B4C]/50 font-medium"
                     required
                   />
                 </div>
@@ -156,13 +155,13 @@ export default function LoginPage() {
 
               {modo === 'registro' && (
                 <div>
-                  <label className="block font-pixel text-xs font-bold uppercase text-neo-dark">
+                  <label className="block font-pixel text-xs font-bold uppercase text-[#073B4C]">
                     {'//'} Rol en el Sistema
                   </label>
                   <select
                     value={rol}
                     onChange={(e) => setRol(e.target.value as 'ALUMNO' | 'ADMINISTRADOR')}
-                    className="mt-1 w-full border-2 border-neo-dark bg-transparent p-2 font-pixel text-xs font-bold text-neo-dark focus:bg-neo-yellow/20 focus:outline-none"
+                    className="mt-1 w-full border-2 border-[#dd6902] bg-[#ffdf88] p-2 font-pixel text-xs font-bold text-[#073B4C] focus:bg-[#ffb220]/25 focus:outline-none"
                   >
                     <option value="ALUMNO">Alumno (Reservas y Consultas)</option>
                     <option value="ADMINISTRADOR">Administrador (Gestión de Salas y Métricas)</option>
@@ -170,6 +169,7 @@ export default function LoginPage() {
                 </div>
               )}
 
+              {/* Botón CTA -> VERDE #06D6A0 */}
               <PixelButton
                 type="submit"
                 variant="success"
@@ -182,8 +182,8 @@ export default function LoginPage() {
             </form>
 
             {/* Accesos Rápidos para Evaluación Académica */}
-            <div className="mt-6 border-t-2 border-neo-dark pt-4">
-              <span className="font-pixel text-[11px] font-bold uppercase text-neo-dark/70 block mb-2">
+            <div className="mt-6 border-t-2 border-[#dd6902]/30 pt-4 text-[#073B4C]">
+              <span className="font-pixel text-[11px] font-bold uppercase text-[#073B4C]/80 block mb-2">
                 {'//'} Perfiles de Prueba Rápidos (1-Clic):
               </span>
               <div className="grid grid-cols-3 gap-2">
@@ -197,7 +197,7 @@ export default function LoginPage() {
                       rol: 'ALUMNO',
                     })
                   }
-                  className="p-2 font-pixel text-xs font-bold text-neo-dark hover:bg-neo-yellow transition-all"
+                  className="p-2 border-2 border-[#0284c7] bg-[#bae6fd] font-pixel text-xs font-bold text-[#073B4C] hover:bg-[#38bdf8]/40 transition-all"
                 >
                   Alumno A
                 </button>
@@ -211,7 +211,7 @@ export default function LoginPage() {
                       rol: 'ALUMNO',
                     })
                   }
-                  className="p-2 font-pixel text-xs font-bold text-neo-dark hover:bg-neo-yellow transition-all"
+                  className="p-2 border-2 border-[#dd6902] bg-[#ffdf88] font-pixel text-xs font-bold text-[#073B4C] hover:bg-[#ffb220]/40 transition-all"
                 >
                   Alumno B
                 </button>
@@ -225,7 +225,7 @@ export default function LoginPage() {
                       rol: 'ADMINISTRADOR',
                     })
                   }
-                  className="border-2 border-neo-dark bg-neo-pink text-white p-2 font-pixel text-xs font-bold hover:bg-[#d8355c] transition-all"
+                  className="border-2 border-[#e11d48] bg-[#fb7185] text-white p-2 font-pixel text-xs font-bold hover:bg-[#e11d48] transition-all"
                 >
                   Admin
                 </button>
