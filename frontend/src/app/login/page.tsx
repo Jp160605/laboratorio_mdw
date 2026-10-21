@@ -41,7 +41,7 @@ export default function LoginPage() {
     <div className="min-h-screen text-neo-dark flex flex-col">
       <Navbar />
 
-      <main className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
+      <main className="flex-1 flex items-center justify-center p-3 sm:p-6 lg:p-8 w-full max-w-7xl mx-auto min-w-0 overflow-hidden box-border">
         <div className="w-full max-w-lg space-y-6">
           {/* Tarjeta de Inicio de Sesión (Ventana Retro Amarilla) */}
           <RetroWindow

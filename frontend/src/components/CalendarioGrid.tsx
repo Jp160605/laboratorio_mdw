@@ -4,6 +4,7 @@ import React from 'react';
 import { Sala, Reserva, Usuario } from '@/types';
 import PixelIcon, { PixelIconName } from '@/components/PixelIcon';
 import RetroWindow from '@/components/RetroWindow';
+import { useWindowWidth } from '@/hooks/useWindowWidth';
 
 interface CalendarioGridProps {
   fechaSeleccionada: string;
@@ -22,6 +23,17 @@ export default function CalendarioGrid({
   usuarioActual,
   onSeleccionarBloque,
 }: CalendarioGridProps) {
+  const screenWidth = useWindowWidth();
+
+  // Calcular ancho dinámico para contener la tabla sin desbordamiento horizontal
+  const dynamicMaxWidth = screenWidth
+    ? screenWidth < 640
+      ? `${Math.max(280, screenWidth - 28)}px`
+      : screenWidth < 1024
+      ? `${Math.max(540, screenWidth - 48)}px`
+      : '100%'
+    : '100%';
+
   // Generar bloques de 1 hora de 08:00 a 20:00
   const horas: number[] = Array.from({ length: 13 }, (_, i) => i + 8); // 8 a 20
 
@@ -99,8 +111,11 @@ export default function CalendarioGrid({
         </div>
       </RetroWindow>
 
-      {/* Matriz / Grilla de Calendario Enmarcada en Amarillo */}
-      <div className="overflow-x-auto border-4 border-[#dd6902] bg-[#ffdf88] shadow-md">
+      {/* Matriz / Grilla de Calendario Enmarcada en Amarillo con ancho dinámico */}
+      <div
+        style={{ maxWidth: dynamicMaxWidth }}
+        className="w-full min-w-0 overflow-x-auto border-4 border-[#dd6902] bg-[#ffdf88] shadow-md box-border"
+      >
         <table className="w-full border-collapse text-left">
           <thead>
             <tr className="border-b-[3px] border-[#dd6902]">

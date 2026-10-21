@@ -126,7 +126,7 @@ export default function MisReservas({
             return (
               <div
                 key={reserva.id}
-                className={`overflow-hidden text-[#073B4C] transition-all ${theme.wrapper}`}
+                className={`overflow-hidden text-[#073B4C] transition-all w-full min-w-0 box-border ${theme.wrapper}`}
               >
                 {/* Cabecera estilo retro OS */}
                 <div

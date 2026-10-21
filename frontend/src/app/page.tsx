@@ -46,7 +46,7 @@ export default function LandingPage() {
         <Navbar />
 
         {/* Contenido Principal con Distribución de Cartel Retro Arcade (40% ancho de pantalla) */}
-        <main className="flex-1 flex items-center justify-center p-3 sm:p-6 lg:p-8">
+        <main className="flex-1 flex items-center justify-center p-3 sm:p-6 lg:p-8 w-full max-w-7xl mx-auto min-w-0 overflow-hidden box-border">
           <div className="w-full lg:w-[42vw] max-w-2xl mx-auto flex flex-col items-center relative py-6 px-4 sm:px-8 border-2 border-[#FFFAEB]/20 bg-transparent">
             {/* Esquinas Neobrutalistas / Retro Brackets */}
             <span className="absolute top-0 left-0 w-4 h-4 border-t-3 border-l-3 border-[#FFFAEB]" />

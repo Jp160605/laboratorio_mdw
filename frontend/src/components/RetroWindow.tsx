@@ -1,4 +1,7 @@
+'use client';
+
 import React from 'react';
+import { useWindowWidth } from '@/hooks/useWindowWidth';
 
 export type WindowColor = 'yellow' | 'blue' | 'red';
 
@@ -21,10 +24,21 @@ export default function RetroWindow({
   color,
   headerColor = 'yellow',
   className = '',
-  bodyClassName = 'p-4 sm:p-5',
+  bodyClassName = 'p-3.5 sm:p-5',
   actionButton,
   onClose,
 }: RetroWindowProps) {
+  const screenWidth = useWindowWidth();
+
+  // Calcular dinámicamente el ancho máximo según el ancho actual de la pantalla
+  const dynamicMaxWidth = screenWidth
+    ? screenWidth < 640
+      ? `${Math.max(280, screenWidth - 28)}px`
+      : screenWidth < 1024
+      ? `${Math.max(540, screenWidth - 48)}px`
+      : '100%'
+    : '100%';
+
   // Resolver color efectivo
   const effectiveColor: WindowColor = (() => {
     if (color) return color;
@@ -63,34 +77,35 @@ export default function RetroWindow({
 
   return (
     <div
-      className={`w-full overflow-hidden transition-all text-[#073B4C] ${themeStyles.wrapper} ${className}`}
+      style={{ maxWidth: dynamicMaxWidth }}
+      className={`w-full overflow-hidden transition-all text-[#073B4C] min-w-0 box-border ${themeStyles.wrapper} ${className}`}
     >
       {/* Cabecera estilo OS retro */}
       <div
-        className={`px-3.5 py-2 flex items-center justify-between ${themeStyles.header}`}
+        className={`px-2.5 sm:px-3.5 py-2 flex items-center justify-between min-w-0 max-w-full overflow-hidden ${themeStyles.header}`}
       >
-        <div className="flex items-center gap-2 min-w-0">
-          {/* Tres Círculos de Color Estilo Mac: Rojo (#EF476F), Amarillo (#FFD166), Azul (#118AB2) */}
-          <div className="flex items-center gap-1.5 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 overflow-hidden">
+          {/* Tres Círculos de Color Estilo Mac */}
+          <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
             <span
-              className={`inline-block w-3 h-3 rounded-full bg-[#EF476F] border ${themeStyles.dotBorder}`}
+              className={`inline-block w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#EF476F] border ${themeStyles.dotBorder}`}
             />
             <span
-              className={`inline-block w-3 h-3 rounded-full bg-[#FFD166] border ${themeStyles.dotBorder}`}
+              className={`inline-block w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#FFD166] border ${themeStyles.dotBorder}`}
             />
             <span
-              className={`inline-block w-3 h-3 rounded-full bg-[#118AB2] border ${themeStyles.dotBorder}`}
+              className={`inline-block w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#118AB2] border ${themeStyles.dotBorder}`}
             />
           </div>
-          <span className="font-pixel text-xs font-bold uppercase tracking-wider text-[#073B4C] ml-1.5 truncate">
+          <span className="font-pixel text-[11px] sm:text-xs font-bold uppercase tracking-wider text-[#073B4C] ml-1 sm:ml-1.5 truncate">
             {title}
           </span>
         </div>
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {badge && (
             <span
-              className={`px-2 py-0.5 font-pixel text-[10px] font-bold uppercase tracking-wider ${themeStyles.badge}`}
+              className={`hidden xs:inline-block px-1.5 sm:px-2 py-0.5 font-pixel text-[9px] sm:text-[10px] font-bold uppercase tracking-wider ${themeStyles.badge}`}
             >
               {badge}
             </span>
@@ -130,7 +145,9 @@ export default function RetroWindow({
       </div>
 
       {/* Contenido interior de la ventana */}
-      <div className={bodyClassName}>{children}</div>
+      <div className={`${bodyClassName} min-w-0 max-w-full overflow-hidden break-words`}>
+        {children}
+      </div>
     </div>
   );
 }

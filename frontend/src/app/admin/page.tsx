@@ -52,7 +52,7 @@ export default function AdminPage() {
     <div className="min-h-screen text-neo-dark flex flex-col">
       <Navbar />
 
-      <main className="flex-1 mx-auto max-w-7xl p-4 sm:p-6 lg:p-8 space-y-6">
+      <main className="flex-1 mx-auto w-full max-w-7xl p-3 sm:p-6 lg:p-8 space-y-6 min-w-0 overflow-hidden box-border">
         {/* Banner de Cabecera de Administrador (Tema Amarillo) */}
         <div className="border-4 border-[#dd6902] bg-[#ffdf88] p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-[#073B4C]">
           <div>

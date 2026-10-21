@@ -11,11 +11,25 @@
   --neo-green: #06D6A0;
 }
 
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+  position: relative;
+}
+
 body {
   color: var(--neo-dark);
   background-color: #073B4C;
   min-height: 100vh;
   font-size: 1rem;
+}
+
+/* Espacio recortado garantizado para el nav inferior fijo en mobile */
+@media (max-width: 767px) {
+  body {
+    padding-bottom: 5rem !important;
+  }
 }
 
 /* Custom retro scrollbar */
