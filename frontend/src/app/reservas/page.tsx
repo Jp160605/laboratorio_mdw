@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import CalendarioGrid from '@/components/CalendarioGrid';
 import SugerirSala from '@/components/SugerirSala';
@@ -20,15 +20,22 @@ export default function ReservasPage() {
     reservas,
     usuarioActual,
     confirmarReserva,
+    cargarDisponibilidad,
+    origenDisponibilidad,
   } = useReservas();
+
+  // Refrescar disponibilidad en PostgreSQL / Redis al cambiar de fecha
+  useEffect(() => {
+    cargarDisponibilidad(fechaSeleccionada);
+  }, [fechaSeleccionada, cargarDisponibilidad]);
 
   const handleSeleccionarBloque = (sala: Sala, horaInicio: number) => {
     setBloqueSeleccionado({ sala, hora: horaInicio });
     setModalReservaAbierto(true);
   };
 
-  const handleConfirmar = (sala: Sala, fecha: string, horaInicio: number, version: number) => {
-    const res = confirmarReserva(sala, fecha, horaInicio, version);
+  const handleConfirmar = async (sala: Sala, fecha: string, horaInicio: number, version: number) => {
+    const res = await confirmarReserva(sala, fecha, horaInicio, version);
     if (!res.exito) {
       alert(res.error);
       return;
@@ -41,7 +48,7 @@ export default function ReservasPage() {
       <Navbar />
 
       <main className="flex-1 mx-auto w-full max-w-7xl p-3 sm:p-6 lg:p-8 space-y-6 min-w-0 overflow-hidden box-border">
-        {/* Cabecera Personalizada (Del Figma: "Bienvenida Mariana López") */}
+        {/* Cabecera Personalizada */}
         <div className="p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-[#FFFAEB]">
           <div>
             <h1 className="font-pixel text-2xl sm:text-3xl font-bold uppercase text-white">
@@ -56,13 +63,18 @@ export default function ReservasPage() {
             <PixelBadge variant="green" size="md" withDot>
               ACID READY
             </PixelBadge>
+            {origenDisponibilidad && (
+              <PixelBadge variant={origenDisponibilidad === 'REDIS_CACHE' ? 'green' : 'yellow'} size="md">
+                {origenDisponibilidad === 'REDIS_CACHE' ? '⚡ CACHE: REDIS' : '🐘 DB: POSTGRES'}
+              </PixelBadge>
+            )}
             <PixelBadge variant="yellow" size="md">
               v.{salas.reduce((acc, s) => acc + s.version, 0)} TOTAL_LOCKS
             </PixelBadge>
           </div>
         </div>
 
-        {/* Recomendador Inteligente (Figma: Filtros de Fecha, Hora, Aforo y 92% Match) */}
+        {/* Recomendador Inteligente (Figma: Filtros de Fecha, Hora, Aforo y Match) */}
         <SugerirSala
           fechaActual={fechaSeleccionada}
           salas={salas}
@@ -71,7 +83,7 @@ export default function ReservasPage() {
           }}
         />
 
-        {/* Matriz Completa de Disponibilidad (Figma: Grilla Horaria) */}
+        {/* Matriz Completa de Disponibilidad (Grilla Horaria) */}
         <CalendarioGrid
           fechaSeleccionada={fechaSeleccionada}
           onCambiarFecha={setFechaSeleccionada}

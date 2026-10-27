@@ -6,6 +6,7 @@ import PixelIcon from '@/components/PixelIcon';
 import PixelButton from '@/components/PixelButton';
 import PixelBadge from '@/components/PixelBadge';
 import RetroWindow from '@/components/RetroWindow';
+import { apiSugerirMejorSala } from '@/services/api';
 
 interface SugerirSalaProps {
   fechaActual: string;
@@ -36,9 +37,43 @@ export default function SugerirSala({
   const formularioValido = fecha.trim() !== '' && aforoDeseado.trim() !== '' && aforoNum > 0;
 
   // Algoritmo de sugerencia óptima
-  const handleCalcularSugerencia = (e: React.FormEvent) => {
+  const handleCalcularSugerencia = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formularioValido) return;
+
+    try {
+      const resp = await apiSugerirMejorSala(fecha, horaDeseada, aforoNum);
+      if (resp.sugerencia) {
+        const s = resp.sugerencia;
+        const salaEncontrada = salas.find((item) => item.id === s.sala_id) || {
+          id: s.sala_id,
+          nombre: s.nombre,
+          capacidad: s.capacidad,
+          ubicacion: s.ubicacion,
+          version: s.version,
+        };
+        const horaInicio = s.hora_sugerida !== undefined ? s.hora_sugerida : (s.hora_inicio || horaDeseada);
+        const diffHoraria = s.desviacion_horas !== undefined ? s.desviacion_horas : Math.abs(horaInicio - horaDeseada);
+        const desperdicio = s.desperdicio_asientos !== undefined ? s.desperdicio_asientos : (salaEncontrada.capacidad - aforoNum);
+        const costo = s.costo_total !== undefined ? s.costo_total : (diffHoraria * 100 + desperdicio);
+        const porcentaje = Math.max(
+          60,
+          Math.min(99, Math.round(100 - (desperdicio / salaEncontrada.capacidad) * 40 - diffHoraria * 15))
+        );
+
+        setSugerencia({
+          sala: salaEncontrada,
+          horaInicio,
+          diferenciaHoraria: diffHoraria,
+          desperdicioAforo: desperdicio,
+          puntuacionCosto: costo,
+          porcentajeAjuste: porcentaje,
+        });
+        return;
+      }
+    } catch {
+      // Fallback a calculo local si el backend no responde
+    }
 
     // 1. Filtrar salas con capacidad suficiente (capacidad >= aforo)
     const candidatas = salas.filter((s) => s.capacidad >= aforoNum);

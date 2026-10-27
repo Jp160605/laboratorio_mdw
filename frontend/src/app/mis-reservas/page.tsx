@@ -39,8 +39,8 @@ export default function MisReservasPage() {
         <MisReservas
           reservas={reservas}
           usuarioActual={usuarioActual}
-          onCancelarReserva={(id) => {
-            const res = cancelarReserva(id);
+          onCancelarReserva={async (id) => {
+            const res = await cancelarReserva(id);
             if (!res.exito) {
               alert(res.error);
             }

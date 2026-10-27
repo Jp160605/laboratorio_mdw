@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { pool } from '../config/db';
-import { obtenerDisponibilidadCache, guardarDisponibilidadCache } from '../services/cache.service';
+import { obtenerDisponibilidadCache, guardarDisponibilidadCache, invalidarTodoCacheDisponibilidad } from '../services/cache.service';
 
 export async function obtenerSalas(_req: Request, res: Response): Promise<void> {
   try {
@@ -11,6 +11,37 @@ export async function obtenerSalas(_req: Request, res: Response): Promise<void> 
   } catch (error: any) {
     console.error('[Salas Controller - Listar]:', error);
     res.status(500).json({ error: 'Error al obtener la lista de salas.' });
+  }
+}
+
+export async function crearSala(req: Request, res: Response): Promise<void> {
+  const { nombre, capacidad, ubicacion } = req.body;
+  if (!nombre || !capacidad) {
+    res.status(400).json({ error: 'Nombre y capacidad son obligatorios.' });
+    return;
+  }
+  try {
+    const resultado = await pool.query(
+      'INSERT INTO salas (nombre, capacidad, ubicacion, version) VALUES ($1, $2, $3, 1) RETURNING *',
+      [nombre, capacidad, ubicacion || 'Campus Central']
+    );
+    await invalidarTodoCacheDisponibilidad();
+    res.status(201).json(resultado.rows[0]);
+  } catch (error: any) {
+    console.error('[Salas Controller - Crear]:', error);
+    res.status(500).json({ error: 'Error al crear la sala en base de datos.' });
+  }
+}
+
+export async function eliminarSala(req: Request, res: Response): Promise<void> {
+  const id = parseInt(req.params.id, 10);
+  try {
+    await pool.query('DELETE FROM salas WHERE id = $1', [id]);
+    await invalidarTodoCacheDisponibilidad();
+    res.status(200).json({ mensaje: 'Sala eliminada exitosamente.' });
+  } catch (error: any) {
+    console.error('[Salas Controller - Eliminar]:', error);
+    res.status(500).json({ error: 'Error al eliminar la sala.' });
   }
 }
 

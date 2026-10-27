@@ -43,3 +43,15 @@ export async function invalidarDisponibilidadCache(fecha: string): Promise<void>
     console.warn('[Redis Caché] Error al invalidar caché:', error);
   }
 }
+
+export async function invalidarTodoCacheDisponibilidad(): Promise<void> {
+  try {
+    const keys = await redis.keys(`${PREFIJO_DISPONIBILIDAD}*`);
+    if (keys.length > 0) {
+      await redis.del(...keys);
+      console.log(`[Redis Caché INVALIDACIÓN GLOBAL] ${keys.length} claves eliminadas`);
+    }
+  } catch (error) {
+    console.warn('[Redis Caché] Error al invalidar caché global:', error);
+  }
+}

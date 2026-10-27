@@ -172,3 +172,28 @@ export async function apiSimularColisionConcurrente(
 
   return { resultadoA, resultadoB };
 }
+
+// 8. Crear y Eliminar Salas (Panel Admin)
+export async function apiCrearSala(
+  nueva: Omit<Sala, 'id' | 'version'>,
+  token?: string
+): Promise<Sala> {
+  const res = await fetch(`${API_BASE_URL}/api/salas`, {
+    method: 'POST',
+    headers: getHeaders(token),
+    body: JSON.stringify(nueva),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Error al crear la sala');
+  return data;
+}
+
+export async function apiEliminarSala(id: number, token?: string): Promise<{ mensaje: string }> {
+  const res = await fetch(`${API_BASE_URL}/api/salas/${id}`, {
+    method: 'DELETE',
+    headers: getHeaders(token),
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Error al eliminar la sala');
+  return data;
+}
