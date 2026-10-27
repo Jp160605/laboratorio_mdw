@@ -1,8 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=DotGothic16&family=VT323&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 :root {
+  --font-pixel: 'DotGothic16', monospace;
+  --font-body: 'VT323', monospace;
   --neo-dark: #073B4C;
   --neo-bg: #FFFAEB;
   --neo-blue: #118AB2;

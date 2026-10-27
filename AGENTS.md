@@ -5,6 +5,7 @@ Bienvenido al repositorio del **Sistema de Reservas para Laboratorios y Salas de
 ## Estructura del Monorepo
 - `/frontend`: Aplicación Next.js (TypeScript, TailwindCSS, Socket.io-client).
 - `/backend`: Servidor Express en Node.js (TypeScript, Socket.io, BullMQ, pg).
+- `/docs`: Documentación técnica del sistema con Docusaurus 3 (TypeScript, Mermaid).
 - `/db`: Scripts de inicialización y esquemas SQL puro (`init.sql`).
 - `docker-compose.yml`: Orquestador de servicios (PostgreSQL, Redis, Backend, Frontend).
 - `.agents/rules/`: Reglas del agente específicas para el proyecto.
@@ -15,3 +16,4 @@ Bienvenido al repositorio del **Sistema de Reservas para Laboratorios y Salas de
 2. **Control de Concurrencia**: Bloqueo optimista mediante columna `version` en `salas`.
 3. **Manejo de Errores**: Retornar `409 Conflict` cuando ocurra colisión en reservas concurrentes.
 4. **Persistencia y Caché**: Cachear disponibilidad en Redis y procesar correos con BullMQ en segundo plano.
+5. **Git y Control de Versiones**: NO realizar `git commit` ni `git push` a menos que el usuario lo solicite de manera explícita en su mensaje.

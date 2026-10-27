@@ -1,0 +1,200 @@
+.wrapper {
+  position: relative;
+  margin: 1.5rem 0;
+  border-radius: 8px;
+  border: 1px solid var(--ifm-color-emphasis-200);
+  background-color: var(--ifm-card-background-color, var(--ifm-background-surface-color));
+  padding: 1rem;
+  overflow: hidden;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.wrapper:hover {
+  border-color: var(--ifm-color-primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.container {
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow-x: auto;
+}
+
+.container > svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Botón flotante de lupa en la esquina superior derecha */
+.zoomButton {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background-color: var(--ifm-color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 10;
+  opacity: 0.85;
+  transition: opacity 0.2s ease, transform 0.15s ease, background-color 0.2s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.wrapper:hover .zoomButton,
+.zoomButton:hover {
+  opacity: 1;
+  transform: scale(1.04);
+}
+
+.zoomIcon {
+  font-size: 0.95rem;
+}
+
+.zoomText {
+  letter-spacing: 0.02em;
+}
+
+/* Modal Overlay a pantalla completa */
+.modalOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background-color: rgba(7, 15, 23, 0.88);
+  backdrop-filter: blur(6px);
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  animation: fadeIn 0.15s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modalContent {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background: var(--ifm-background-color, #1b1b1d);
+  border: 1px solid var(--ifm-color-emphasis-300, #333);
+  border-radius: 10px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+}
+
+/* Barra superior de controles */
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.25rem;
+  background-color: var(--ifm-card-background-color, #242526);
+  border-bottom: 1px solid var(--ifm-color-emphasis-200, #3a3b3c);
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.modalTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--ifm-font-color-base, #fff);
+}
+
+.zoomLevelBadge {
+  background-color: var(--ifm-color-emphasis-200, #333);
+  color: var(--ifm-color-primary, #25c2a0);
+  font-size: 0.8rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  font-weight: 700;
+  font-family: monospace;
+}
+
+.modalControls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.controlBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--ifm-color-emphasis-200, #3a3b3c);
+  color: var(--ifm-font-color-base, #fff);
+  border: 1px solid var(--ifm-color-emphasis-300, #4e4f50);
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.controlBtn:hover {
+  background: var(--ifm-color-primary, #25c2a0);
+  color: #fff;
+  border-color: var(--ifm-color-primary, #25c2a0);
+}
+
+.closeBtn {
+  background: #ef476f !important;
+  color: #fff !important;
+  border-color: #d6375c !important;
+}
+
+.closeBtn:hover {
+  background: #d6375c !important;
+  transform: scale(1.03);
+}
+
+.modalHelp {
+  text-align: center;
+  padding: 0.35rem;
+  font-size: 0.75rem;
+  color: var(--ifm-color-emphasis-600, #888);
+  background-color: var(--ifm-background-surface-color, #1a1a1b);
+  border-bottom: 1px solid var(--ifm-color-emphasis-100, #2a2a2b);
+}
+
+/* Área interactiva de arrastre y zoom */
+.viewport {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  user-select: none;
+  background: radial-gradient(circle, var(--ifm-color-emphasis-100, #222) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.svgContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  will-change: transform;
+}
+
+.svgContainer svg {
+  max-width: none !important;
+  height: auto !important;
+}
