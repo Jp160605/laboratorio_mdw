@@ -43,6 +43,21 @@ export default function CalendarioGrid({
     return `${inicio} // ${fin}`;
   };
 
+  // Calcular fecha de hoy y hora actual para validación temporal
+  const ahora = new Date();
+  const año = ahora.getFullYear();
+  const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+  const dia = String(ahora.getDate()).padStart(2, '0');
+  const fechaHoyLocal = `${año}-${mes}-${dia}`;
+  const horaActual = ahora.getHours();
+
+  // Validación: Un bloque está concluido si la fecha es pasada, o si es hoy y el bloque ya terminó (hora + 1 <= horaActual)
+  const esBloquePasado = (hora: number): boolean => {
+    if (fechaSeleccionada < fechaHoyLocal) return true;
+    if (fechaSeleccionada === fechaHoyLocal && hora + 1 <= horaActual) return true;
+    return false;
+  };
+
   // Buscar reserva para una sala, fecha y hora específicas
   const obtenerReserva = (salaId: number, hora: number): Reserva | undefined => {
     return reservas.find(
@@ -83,10 +98,11 @@ export default function CalendarioGrid({
                 Fecha:
               </label>
             </div>
-            {/* Input con variante base en 100 (#fef3c7) */}
+            {/* Input con variante base en 100 (#fef3c7) y mínimo hoy */}
             <input
               id="fecha-picker"
               type="date"
+              min={fechaHoyLocal}
               value={fechaSeleccionada}
               onChange={(e) => onCambiarFecha(e.target.value)}
               className="border-2 border-[#dd6902] bg-[#fef3c7] px-3 py-1.5 font-pixel text-sm font-bold text-[#073B4C] focus:bg-[#fef3c7] focus:outline-none"
@@ -97,7 +113,7 @@ export default function CalendarioGrid({
           <div className="flex flex-wrap items-center gap-3 font-pixel text-xs font-bold">
             <div className="flex items-center gap-1.5 border-2 border-[#dd6902] bg-[#fef3c7] px-2 py-1">
               <span className="h-3 w-3 border border-[#073B4C] bg-[#06D6A0]"></span>
-              <span className="text-[#073B4C]">LIBRE (Clic)</span>
+              <span className="text-[#073B4C]">LIBRE</span>
             </div>
             <div className="flex items-center gap-1.5 border-2 border-[#0284c7] bg-[#38bdf8] px-2 py-1">
               <span className="h-3 w-3 border border-[#0284c7] bg-[#0284c7]"></span>
@@ -106,6 +122,10 @@ export default function CalendarioGrid({
             <div className="flex items-center gap-1.5 border-2 border-[#e11d48] bg-[#fb7185] px-2 py-1">
               <span className="h-3 w-3 border border-[#e11d48] bg-[#e11d48]"></span>
               <span className="text-[#073B4C]">OCUPADO</span>
+            </div>
+            <div className="flex items-center gap-1.5 border-2 border-gray-400 bg-gray-200 px-2 py-1">
+              <span className="h-3 w-3 border border-gray-500 bg-[#9ca3af]"></span>
+              <span className="text-[#073B4C]">CONCLUIDO</span>
             </div>
           </div>
         </div>
@@ -127,7 +147,7 @@ export default function CalendarioGrid({
                 </div>
               </th>
 
-              {/* Encabezados de Salas: de un solo color (#ffb220) con icono de color para diferenciarlas */}
+              {/* Encabezados de Salas */}
               {salas.map((sala, idx) => {
                 const iconConfig = iconosSalas[idx % iconosSalas.length];
                 return (
@@ -137,7 +157,6 @@ export default function CalendarioGrid({
                   >
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-center gap-2.5">
-                        {/* Icono con color específico para diferenciar la sala */}
                         <span className="p-1.5 border-2 border-[#dd6902] bg-[#fef3c7] inline-flex items-center justify-center shrink-0">
                           <PixelIcon name={iconConfig.name} size={18} color={iconConfig.color} />
                         </span>
@@ -168,84 +187,110 @@ export default function CalendarioGrid({
             </tr>
           </thead>
           <tbody className="divide-y-2 divide-[#dd6902]/25">
-            {horas.map((hora) => (
-              <tr key={hora} className="transition-colors">
-                {/* Columna de Hora */}
-                <td className="sticky left-0 z-10 border-r-[3px] border-b border-[#dd6902] bg-[#ffb220] p-2.5 font-pixel text-xs font-bold text-[#073B4C]">
-                  {getEtiquetaHora(hora)}
-                </td>
+            {horas.map((hora) => {
+              const pasado = esBloquePasado(hora);
+              return (
+                <tr key={hora} className="transition-colors">
+                  {/* Columna de Hora */}
+                  <td className={`sticky left-0 z-10 border-r-[3px] border-b border-[#dd6902] p-2.5 font-pixel text-xs font-bold text-[#073B4C] ${pasado ? 'bg-[#ffb220]/60' : 'bg-[#ffb220]'}`}>
+                    {getEtiquetaHora(hora)}
+                  </td>
 
-                {/* Celdas por Sala: toda la celda obtiene el color de su estado, incluso en el hover */}
-                {salas.map((sala) => {
-                  const reserva = obtenerReserva(sala.id, hora);
-                  const esMia =
-                    reserva && usuarioActual && reserva.usuario_id === usuarioActual.id;
+                  {/* Celdas por Sala */}
+                  {salas.map((sala) => {
+                    const reserva = obtenerReserva(sala.id, hora);
+                    const esMia =
+                      reserva && usuarioActual && reserva.usuario_id === usuarioActual.id;
 
-                  if (reserva) {
+                    if (reserva) {
+                      return (
+                        <td
+                          key={sala.id}
+                          className={`border-r-2 border-b p-2.5 last:border-r-0 transition-colors ${
+                            esMia
+                              ? 'border-[#0284c7] bg-[#38bdf8] text-[#073B4C] hover:brightness-105'
+                              : 'border-[#e11d48] bg-[#fb7185] text-[#073B4C] hover:brightness-105'
+                          }`}
+                        >
+                          <div className="flex h-full flex-col justify-between">
+                            <div className="flex items-center justify-between">
+                              <span className="font-pixel text-[11px] font-bold uppercase tracking-wider">
+                                {esMia ? '★ TU RESERVA' : '✗ OCUPADO'}
+                              </span>
+                              <PixelIcon
+                                name={esMia ? 'check' : 'close'}
+                                size={14}
+                                color="#073B4C"
+                              />
+                            </div>
+                            <p className="my-1 font-body text-xs font-bold">
+                              {esMia
+                                ? 'Confirmado para ti'
+                                : `Usuario #${reserva.usuario_id}`}
+                            </p>
+                            <div className="flex items-center justify-between border-t border-[#073B4C]/25 pt-1 font-pixel text-[9px]">
+                              <span>v_ok:{reserva.version_sala_aplicada}</span>
+                              <span className="opacity-80">#{reserva.id}</span>
+                            </div>
+                          </div>
+                        </td>
+                      );
+                    }
+
+                    // Celda CONCLUIDA / PASADA
+                    if (pasado) {
+                      return (
+                        <td
+                          key={sala.id}
+                          className="border-r-2 border-b border-[#dd6902]/20 p-2.5 bg-[#e5e7eb]/40 text-[#073B4C]/50 cursor-not-allowed last:border-r-0 select-none"
+                          title="Este horario ya concluyó y no está disponible para reserva."
+                        >
+                          <div className="flex h-full flex-col justify-between opacity-50">
+                            <div className="flex items-center justify-between">
+                              <span className="font-pixel text-[10px] font-bold uppercase tracking-wider text-[#073B4C]/70">
+                                ⌛ CONCLUIDO
+                              </span>
+                              <PixelIcon name="lock" size={12} color="#073B4C" />
+                            </div>
+                            <span className="mt-1 font-body text-[10px] italic">
+                              No disponible
+                            </span>
+                          </div>
+                        </td>
+                      );
+                    }
+
+                    // Celda LIBRE (Disponible)
                     return (
                       <td
                         key={sala.id}
-                        className={`border-r-2 border-b p-2.5 last:border-r-0 transition-colors ${
-                          esMia
-                            ? 'border-[#0284c7] bg-[#38bdf8] text-[#073B4C] hover:brightness-105'
-                            : 'border-[#e11d48] bg-[#fb7185] text-[#073B4C] hover:brightness-105'
-                        }`}
+                        className="border-r-2 border-b border-[#dd6902]/30 p-0 bg-[#ffdf88] hover:bg-[#06D6A0]/35 transition-colors last:border-r-0"
                       >
-                        <div className="flex h-full flex-col justify-between">
-                          <div className="flex items-center justify-between">
-                            <span className="font-pixel text-[11px] font-bold uppercase tracking-wider">
-                              {esMia ? '★ TU RESERVA' : '✗ OCUPADO'}
+                        <button
+                          type="button"
+                          onClick={() => onSeleccionarBloque(sala, hora)}
+                          className="group flex h-full w-full flex-col justify-between p-2.5 text-left transition-colors cursor-pointer"
+                        >
+                          <div className="flex items-center justify-between text-[#073B4C]">
+                            <span className="font-pixel text-[11px] font-bold uppercase tracking-wider text-[#073B4C]/70 group-hover:text-[#073B4C]">
+                              + DISPONIBLE
                             </span>
                             <PixelIcon
-                              name={esMia ? 'check' : 'close'}
-                              size={14}
-                              color="#073B4C"
+                              name="plus"
+                              size={12}
+                              className="text-[#073B4C] opacity-50 group-hover:opacity-100"
                             />
                           </div>
-                          <p className="my-1 font-body text-xs font-bold">
-                            {esMia
-                              ? 'Confirmado para ti'
-                              : `Usuario #${reserva.usuario_id}`}
-                          </p>
-                          <div className="flex items-center justify-between border-t border-[#073B4C]/25 pt-1 font-pixel text-[9px]">
-                            <span>v_ok:{reserva.version_sala_aplicada}</span>
-                            <span className="opacity-80">#{reserva.id}</span>
-                          </div>
-                        </div>
+                          <span className="mt-2 font-pixel text-[10px] font-bold text-[#dd6902] group-hover:text-[#073B4C]">
+                            RESERVAR &gt;
+                          </span>
+                        </button>
                       </td>
                     );
-                  }
-
-                  // Celda LIBRE (Disponible): toda la celda cambia a verde en hover
-                  return (
-                    <td
-                      key={sala.id}
-                      className="border-r-2 border-b border-[#dd6902]/30 p-0 bg-[#ffdf88] hover:bg-[#06D6A0]/35 transition-colors last:border-r-0"
-                    >
-                      <button
-                        type="button"
-                        onClick={() => onSeleccionarBloque(sala, hora)}
-                        className="group flex h-full w-full flex-col justify-between p-2.5 text-left transition-colors cursor-pointer"
-                      >
-                        <div className="flex items-center justify-between text-[#073B4C]">
-                          <span className="font-pixel text-[11px] font-bold uppercase tracking-wider text-[#073B4C]/70 group-hover:text-[#073B4C]">
-                            + DISPONIBLE
-                          </span>
-                          <PixelIcon
-                            name="plus"
-                            size={12}
-                            className="text-[#073B4C] opacity-50 group-hover:opacity-100"
-                          />
-                        </div>
-                        <span className="mt-2 font-pixel text-[10px] font-bold text-[#dd6902] group-hover:text-[#073B4C]">
-                          RESERVAR &gt;
-                        </span>
-                      </button>
-                    </td>
-                  );
-                })}
-              </tr>
-            ))}
+                  })}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>

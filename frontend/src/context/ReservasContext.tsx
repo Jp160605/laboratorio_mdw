@@ -209,6 +209,26 @@ export function ReservasProvider({ children }: { children: React.ReactNode }) {
       return { exito: false, error: 'Debes iniciar sesión para reservar.' };
     }
 
+    // Validación Temporal (Frontend): No reservar días pasados ni horas concluidas
+    const ahora = new Date();
+    const fechaStr = fecha.includes('T') ? fecha.split('T')[0] : fecha;
+    const año = ahora.getFullYear();
+    const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+    const dia = String(ahora.getDate()).padStart(2, '0');
+    const fechaHoyLocal = `${año}-${mes}-${dia}`;
+    const horaActual = ahora.getHours();
+
+    if (fechaStr < fechaHoyLocal) {
+      return { exito: false, error: 'No es posible reservar en fechas pasadas.' };
+    }
+
+    if (fechaStr === fechaHoyLocal && horaInicio + 1 <= horaActual) {
+      return {
+        exito: false,
+        error: `El bloque horario (${horaInicio}:00 - ${horaInicio + 1}:00) ya ha concluido. Solo puedes reservar bloques en curso o futuros.`,
+      };
+    }
+
     try {
       const token = await resolverTokenUsuario(usuarioActual.email);
       const res = await apiCrearReserva(

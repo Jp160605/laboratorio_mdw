@@ -86,17 +86,26 @@ export async function sugerirMejorSala(req: Request, res: Response): Promise<voi
   const horaDeseada = parseInt(req.query.hora_deseada as string, 10) || 10;
   const aforo = parseInt(req.query.aforo as string, 10) || 10;
 
+  const ahora = new Date();
+  const fechaStr = fecha.includes('T') ? fecha.split('T')[0] : fecha;
+  const fechaHoyLocal = `${ahora.getFullYear()}-${String(ahora.getMonth() + 1).padStart(2, '0')}-${String(ahora.getDate()).padStart(2, '0')}`;
+  const horaActual = ahora.getHours();
+
+  if (fechaStr < fechaHoyLocal) {
+    res.status(400).json({ error: 'No se pueden sugerir salas para fechas pasadas.' });
+    return;
+  }
+
+  // Si la fecha es hoy, filtrar bloques que ya concluyeron (hora + 1 <= horaActual)
+  const horaMinimaValida = (fechaStr === fechaHoyLocal) ? horaActual : 0;
+
   try {
-    // Consulta SQL con función de costo:
-    // Genera bloques de 8 a 20 mediante generate_series
-    // Filtra salas con capacidad >= aforo que NO tengan reserva CONFIRMADA en esa fecha y bloque
-    // Ordena primero por menor diferencia horaria y luego por menor desperdicio de aforo
     const query = `
       WITH bloques_posibles AS (
         SELECT s.id AS sala_id, s.nombre, s.capacidad, s.ubicacion, s.version, h.hora
         FROM salas s
         CROSS JOIN generate_series(8, 20) AS h(hora)
-        WHERE s.capacidad >= $1
+        WHERE s.capacidad >= $1 AND (h.hora + 1 > $4)
       )
       SELECT 
         bp.sala_id,
@@ -119,7 +128,7 @@ export async function sugerirMejorSala(req: Request, res: Response): Promise<voi
       LIMIT 1;
     `;
 
-    const resultado = await pool.query(query, [aforo, horaDeseada, fecha]);
+    const resultado = await pool.query(query, [aforo, horaDeseada, fechaStr, horaMinimaValida]);
 
     if (resultado.rows.length === 0) {
       res.status(404).json({

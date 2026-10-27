@@ -26,6 +26,17 @@ export default function ModalReserva({
 }: ModalReservaProps) {
   if (!abierto || !sala) return null;
 
+  const ahora = new Date();
+  const año = ahora.getFullYear();
+  const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+  const dia = String(ahora.getDate()).padStart(2, '0');
+  const fechaHoyLocal = `${año}-${mes}-${dia}`;
+  const horaActual = ahora.getHours();
+
+  // Validación: si la fecha es pasada, o si es hoy y el bloque ya terminó (horaInicio + 1 <= horaActual)
+  const fechaStr = fecha.includes('T') ? fecha.split('T')[0] : fecha;
+  const esPasado = fechaStr < fechaHoyLocal || (fechaStr === fechaHoyLocal && horaInicio + 1 <= horaActual);
+
   const horaFin = horaInicio + 1;
   const etiquetaHora = `${horaInicio < 10 ? '0' : ''}${horaInicio}:00 - ${
     horaFin < 10 ? '0' : ''
@@ -38,7 +49,6 @@ export default function ModalReserva({
         {/* Cabecera de la Ventana en #ffb220 con borde #dd6902 */}
         <div className="flex items-center justify-between border-b-[3px] border-[#dd6902] bg-[#ffb220] px-3.5 py-2.5">
           <div className="flex items-center gap-2">
-            {/* Tres Círculos de Color Estilo Mac: Rojo (#EF476F), Amarillo (#FFD166), Azul (#118AB2) */}
             <div className="flex items-center gap-1.5 shrink-0">
               <span className="inline-block h-3 w-3 rounded-full bg-[#EF476F] border border-[#dd6902]" />
               <span className="inline-block h-3 w-3 rounded-full bg-[#FFD166] border border-[#dd6902]" />
@@ -105,13 +115,13 @@ export default function ModalReserva({
               <span className="font-pixel text-[11px] font-bold text-[#073B4C]/80 uppercase">
                 {'//'} Horario Bloque:
               </span>
-              <span className="font-pixel font-bold text-[#dd6902]">
+              <span className="font-pixel text-xs font-bold text-[#073B4C]">
                 {etiquetaHora}
               </span>
             </div>
 
-            <div className="flex justify-between items-center border-t border-[#dd6902]/30 pt-2">
-              <span className="font-pixel text-[11px] font-bold text-[#073B4C] uppercase">
+            <div className="flex justify-between items-center">
+              <span className="font-pixel text-[11px] font-bold text-[#073B4C]/80 uppercase">
                 {'//'} Versión Enviada:
               </span>
               <span className="border-2 border-[#dd6902] bg-[#ffb220] px-2 py-0.5 font-pixel text-xs font-bold text-[#073B4C]">
@@ -129,15 +139,25 @@ export default function ModalReserva({
             </div>
           </div>
 
-          <div className="border-2 border-[#dd6902] bg-[#ffb220]/40 p-3 text-[11px] font-body text-[#073B4C]">
-            <strong className="font-pixel text-xs uppercase block text-[#073B4C] mb-0.5">
-              Transacción ACID en Proceso:
-            </strong>
-            Al confirmar, el servidor valida <code className="font-pixel font-bold bg-[#ffdf88] px-1 border border-[#dd6902]">version = {sala.version}</code>. Si nadie ha reservado en el mismo instante, la sala incrementa a <code className="font-pixel font-bold bg-[#ffdf88] px-1 border border-[#dd6902]">version = {sala.version + 1}</code>.
-          </div>
+          {/* Alerta si el bloque ya concluyó */}
+          {esPasado ? (
+            <div className="border-2 border-[#e11d48] bg-[#fecdd3] p-3 text-[11px] font-body text-[#073B4C]">
+              <strong className="font-pixel text-xs uppercase block text-[#e11d48] mb-0.5">
+                ⚠️ HORARIO CONCLUIDO / NO DISPONIBLE:
+              </strong>
+              Este bloque horario ya ha transcurrido. No es posible crear reservas en el pasado.
+            </div>
+          ) : (
+            <div className="border-2 border-[#dd6902] bg-[#ffb220]/40 p-3 text-[11px] font-body text-[#073B4C]">
+              <strong className="font-pixel text-xs uppercase block text-[#073B4C] mb-0.5">
+                Transacción ACID en Proceso:
+              </strong>
+              Al confirmar, el servidor valida <code className="font-pixel font-bold bg-[#ffdf88] px-1 border border-[#dd6902]">version = {sala.version}</code>. Si nadie ha reservado en el mismo instante, la sala incrementa a <code className="font-pixel font-bold bg-[#ffdf88] px-1 border border-[#dd6902]">version = {sala.version + 1}</code>.
+            </div>
+          )}
         </div>
 
-        {/* Acciones (Confirmar es el CTA principal -> VERDE #06D6A0) */}
+        {/* Acciones */}
         <div className="flex items-center justify-end gap-3 border-t-[3px] border-[#dd6902] bg-[#ffb220]/25 px-5 py-3">
           <button
             type="button"
@@ -146,15 +166,17 @@ export default function ModalReserva({
           >
             Cancelar
           </button>
-          <PixelButton
-            type="button"
-            variant="success"
-            size="md"
-            onClick={() => onConfirmar(sala, fecha, horaInicio, sala.version)}
-            icon={<PixelIcon name="check" size={16} />}
-          >
-            Confirmar Reserva
-          </PixelButton>
+          {!esPasado && (
+            <PixelButton
+              type="button"
+              variant="success"
+              size="md"
+              onClick={() => onConfirmar(sala, fecha, horaInicio, sala.version)}
+              icon={<PixelIcon name="check" size={16} />}
+            >
+              Confirmar Reserva
+            </PixelButton>
+          )}
         </div>
       </div>
     </div>

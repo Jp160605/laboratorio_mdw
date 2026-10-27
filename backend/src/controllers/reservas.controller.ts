@@ -27,6 +27,33 @@ export async function crearReserva(req: AuthRequest, res: Response): Promise<voi
   }
 
   const horaFin = horaInt + 1;
+
+  // Validación Temporal: No permitir fechas pasadas ni horas concluidas hoy
+  const ahora = new Date();
+  const fechaStr = typeof fecha === 'string' && fecha.includes('T') ? fecha.split('T')[0] : String(fecha);
+  const año = ahora.getFullYear();
+  const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+  const dia = String(ahora.getDate()).padStart(2, '0');
+  const fechaHoyLocal = `${año}-${mes}-${dia}`;
+  const horaActual = ahora.getHours();
+
+  if (fechaStr < fechaHoyLocal) {
+    res.status(400).json({
+      error: 'No es posible reservar en fechas pasadas.',
+      codigo: 'FECHA_PASADA',
+    });
+    return;
+  }
+
+  // Si es hoy, validar que el bloque no haya concluido ya (si son las 11:30, horaFin=12 está permitida, pero horaFin=11 ya concluyó)
+  if (fechaStr === fechaHoyLocal && horaFin <= horaActual) {
+    res.status(400).json({
+      error: `El bloque horario de ${horaInt}:00 a ${horaFin}:00 ya ha concluido. Solo puedes reservar bloques en curso o futuros.`,
+      codigo: 'HORA_PASADA',
+    });
+    return;
+  }
+
   const client = await pool.connect();
 
   try {
