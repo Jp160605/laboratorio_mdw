@@ -1,3 +1,5 @@
+process.env.TZ = process.env.TZ || 'America/Mexico_City';
+
 import http from 'http';
 import { Server as SocketIOServer } from 'socket.io';
 import dotenv from 'dotenv';

@@ -1,7 +1,11 @@
-import { Pool } from 'pg';
+import { Pool, types } from 'pg';
 import dotenv from 'dotenv';
 
 dotenv.config();
+
+// OID 1082 es el tipo DATE en PostgreSQL. 
+// Forzar a devolver 'YYYY-MM-DD' como string puro para evitar conversiones a objeto Date en UTC
+types.setTypeParser(1082, (val: string) => val);
 
 export const pool = new Pool({
   host: process.env.DB_HOST || 'localhost',

@@ -6,6 +6,8 @@ import CalendarioGrid from '@/components/CalendarioGrid';
 import SugerirSala from '@/components/SugerirSala';
 import ModalReserva from '@/components/ModalReserva';
 import PixelBadge from '@/components/PixelBadge';
+import PixelButton from '@/components/PixelButton';
+import PixelIcon from '@/components/PixelIcon';
 import { useReservas } from '@/context/ReservasContext';
 import { Sala } from '@/types';
 
@@ -13,6 +15,8 @@ export default function ReservasPage() {
   const hoyStr = new Date().toISOString().split('T')[0];
   const [fechaSeleccionada, setFechaSeleccionada] = useState<string>(hoyStr);
   const [modalReservaAbierto, setModalReservaAbierto] = useState<boolean>(false);
+  const [modalErrorVisible, setModalErrorVisible] = useState<boolean>(false);
+  const [errorModalTexto, setErrorModalTexto] = useState<string>('');
   const [bloqueSeleccionado, setBloqueSeleccionado] = useState<{ sala: Sala; hora: number } | null>(null);
 
   const {
@@ -30,6 +34,23 @@ export default function ReservasPage() {
   }, [fechaSeleccionada, cargarDisponibilidad]);
 
   const handleSeleccionarBloque = (sala: Sala, horaInicio: number) => {
+    // Validación preventiva en cliente para fecha y hora
+    const ahora = new Date();
+    const año = ahora.getFullYear();
+    const mes = String(ahora.getMonth() + 1).padStart(2, '0');
+    const dia = String(ahora.getDate()).padStart(2, '0');
+    const fechaHoyLocal = `${año}-${mes}-${dia}`;
+    const horaActual = ahora.getHours();
+
+    const fechaStr = fechaSeleccionada.includes('T') ? fechaSeleccionada.split('T')[0] : fechaSeleccionada;
+    if (fechaStr < fechaHoyLocal || (fechaStr === fechaHoyLocal && horaInicio + 1 <= horaActual)) {
+      setErrorModalTexto(
+        `El bloque horario de ${horaInicio}:00 a ${horaInicio + 1}:00 ya ha concluido. Para garantizar la consistencia, el sistema no permite reservar horarios en el pasado.`
+      );
+      setModalErrorVisible(true);
+      return;
+    }
+
     setBloqueSeleccionado({ sala, hora: horaInicio });
     setModalReservaAbierto(true);
   };
@@ -37,8 +58,7 @@ export default function ReservasPage() {
   const handleConfirmar = async (sala: Sala, fecha: string, horaInicio: number, version: number) => {
     const res = await confirmarReserva(sala, fecha, horaInicio, version);
     if (!res.exito) {
-      alert(res.error);
-      return;
+      throw new Error(res.error || 'La transacción no pudo completarse en la base de datos.');
     }
     setModalReservaAbierto(false);
   };
@@ -74,7 +94,7 @@ export default function ReservasPage() {
           </div>
         </div>
 
-        {/* Recomendador Inteligente (Figma: Filtros de Fecha, Hora, Aforo y Match) */}
+        {/* Recomendador Inteligente */}
         <SugerirSala
           fechaActual={fechaSeleccionada}
           salas={salas}
@@ -104,6 +124,50 @@ export default function ReservasPage() {
         usuarioActual={usuarioActual}
         onConfirmar={handleConfirmar}
       />
+
+      {/* Modal Retro de Error Temporal / Restricción (Tema Neobrutalista Rojo) */}
+      {modalErrorVisible && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-none">
+          <div className="w-full max-w-md border-4 border-[#e11d48] bg-[#ffdf88] overflow-hidden text-[#073B4C] shadow-2xl animate-in fade-in zoom-in-95 duration-100">
+            <div className="flex items-center justify-between border-b-[3px] border-[#e11d48] bg-[#fb7185] px-3.5 py-2.5">
+              <div className="flex items-center gap-2">
+                <span className="inline-block h-3 w-3 rounded-full bg-[#e11d48] border border-[#073B4C]" />
+                <span className="font-pixel text-xs font-bold uppercase tracking-wider text-[#073B4C]">
+                  ACCESO_DENEGADO.SYS
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setModalErrorVisible(false)}
+                className="flex h-4 w-4 items-center justify-center border-2 border-[#e11d48] bg-[#e11d48] text-white font-pixel font-bold text-[10px] leading-none hover:brightness-110"
+              >
+                ✕
+              </button>
+            </div>
+            <div className="p-5 space-y-3 font-body text-xs text-[#073B4C]">
+              <div className="flex items-center gap-2 font-pixel text-sm font-bold text-[#e11d48]">
+                <PixelIcon name="alert" size={18} color="#e11d48" />
+                <span>HORARIO NO DISPONIBLE</span>
+              </div>
+              <p className="font-bold border-2 border-[#e11d48]/40 bg-[#fecdd3] p-3 text-[#073B4C] leading-relaxed">
+                {errorModalTexto}
+              </p>
+              <p className="text-[11px] text-[#073B4C]/80">
+                La solicitud no fue enviada a PostgreSQL. El sistema solo acepta reservas para bloques en curso o futuros.
+              </p>
+            </div>
+            <div className="flex justify-end border-t-[3px] border-[#e11d48] bg-[#ffb220]/25 p-3">
+              <PixelButton
+                variant="danger"
+                size="sm"
+                onClick={() => setModalErrorVisible(false)}
+              >
+                Entendido [Cerrar]
+              </PixelButton>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

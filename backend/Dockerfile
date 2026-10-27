@@ -21,6 +21,8 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
+RUN apk add --no-cache tzdata
+ENV TZ=America/Mexico_City
 
 COPY package*.json ./
 RUN npm ci --only=production

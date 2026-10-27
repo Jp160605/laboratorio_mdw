@@ -202,11 +202,26 @@ export async function cancelarReserva(req: AuthRequest, res: Response): Promise<
       return;
     }
 
-    // 3. Validar regla de al menos 2 horas de anticipación (RF-05)
-    const fechaHoraInicio = new Date(`${reserva.fecha}T${reserva.hora_inicio < 10 ? '0' : ''}${reserva.hora_inicio}:00:00`);
+    // 3. Normalizar fecha a string YYYY-MM-DD para cálculo temporal preciso
+    let fechaStr: string;
+    if (reserva.fecha instanceof Date) {
+      const y = reserva.fecha.getFullYear();
+      const m = String(reserva.fecha.getMonth() + 1).padStart(2, '0');
+      const d = String(reserva.fecha.getDate()).padStart(2, '0');
+      fechaStr = `${y}-${m}-${d}`;
+    } else {
+      fechaStr = String(reserva.fecha).split('T')[0];
+    }
+
+    // Validar regla de al menos 2 horas de anticipación (RF-05)
+    const fechaHoraInicio = new Date(`${fechaStr}T${reserva.hora_inicio < 10 ? '0' : ''}${reserva.hora_inicio}:00:00`);
     const ahora = new Date();
     const diferenciaMs = fechaHoraInicio.getTime() - ahora.getTime();
     const diferenciaHoras = diferenciaMs / (1000 * 60 * 60);
+
+    console.log(
+      `[Reservas Controller - Cancelar] Intento de cancelación reserva #${reservaId} (${fechaStr} ${reserva.hora_inicio}:00). Horas de anticipación: ${diferenciaHoras.toFixed(2)}h (Hora actual: ${ahora.toLocaleTimeString('es-MX')})`
+    );
 
     if (diferenciaHoras < 2) {
       res.status(400).json({
@@ -222,8 +237,8 @@ export async function cancelarReserva(req: AuthRequest, res: Response): Promise<
       [reservaId]
     );
 
-    // 5. Invalidar caché en Redis
-    await invalidarDisponibilidadCache(reserva.fecha);
+    // 5. Invalidar caché en Redis para la fecha afectada
+    await invalidarDisponibilidadCache(fechaStr);
 
     // 6. Cancelar recordatorio en BullMQ
     await cancelarRecordatorioReserva(reservaId);
@@ -231,7 +246,7 @@ export async function cancelarReserva(req: AuthRequest, res: Response): Promise<
     // 7. Emitir evento Socket.io liberando el bloque
     emitirReservaCancelada({
       sala_id: reserva.sala_id,
-      fecha: reserva.fecha,
+      fecha: fechaStr,
       hora_inicio: reserva.hora_inicio,
     });
 

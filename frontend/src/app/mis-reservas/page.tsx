@@ -1,19 +1,31 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import MisReservas from '@/components/MisReservas';
 import PixelBadge from '@/components/PixelBadge';
+import PixelIcon from '@/components/PixelIcon';
 import { useReservas } from '@/context/ReservasContext';
 
 export default function MisReservasPage() {
-  const { reservas, misReservas, usuarioActual, cancelarReserva, cargarMisReservas } = useReservas();
+  const { misReservas, usuarioActual, cancelarReserva, cargarMisReservas } = useReservas();
+  const [mensajeExito, setMensajeExito] = useState<string | null>(null);
+  const [mensajeError, setMensajeError] = useState<string | null>(null);
 
   useEffect(() => {
     cargarMisReservas();
   }, [cargarMisReservas, usuarioActual]);
 
-  const listaReservas = misReservas && misReservas.length > 0 ? misReservas : reservas;
+  const handleCancelar = async (id: number) => {
+    setMensajeExito(null);
+    setMensajeError(null);
+    const res = await cancelarReserva(id);
+    if (!res.exito) {
+      setMensajeError(res.error || 'No se pudo cancelar la reserva.');
+    } else {
+      setMensajeExito(`Reserva #${id} cancelada exitosamente en PostgreSQL. El espacio ha quedado libre en el calendario.`);
+    }
+  };
 
   return (
     <div className="min-h-screen text-neo-dark flex flex-col">
@@ -41,16 +53,45 @@ export default function MisReservasPage() {
           </PixelBadge>
         </div>
 
+        {/* Notificación Retro de Éxito al Cancelar */}
+        {mensajeExito && (
+          <div className="border-4 border-[#06D6A0] bg-[#06D6A0]/20 p-4 font-body text-xs text-[#073B4C] flex items-center justify-between animate-in fade-in">
+            <div className="flex items-center gap-2 font-pixel font-bold">
+              <PixelIcon name="check" size={16} color="#06D6A0" />
+              <span>{mensajeExito}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setMensajeExito(null)}
+              className="font-pixel font-bold text-xs text-[#073B4C] hover:opacity-75"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
+        {/* Notificación Retro de Error al Cancelar */}
+        {mensajeError && (
+          <div className="border-4 border-[#e11d48] bg-[#fecdd3] p-4 font-body text-xs text-[#073B4C] flex items-center justify-between animate-in fade-in">
+            <div className="flex items-center gap-2 font-pixel font-bold text-[#e11d48]">
+              <PixelIcon name="alert" size={16} color="#e11d48" />
+              <span>{mensajeError}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setMensajeError(null)}
+              className="font-pixel font-bold text-xs text-[#073B4C] hover:opacity-75"
+            >
+              ✕
+            </button>
+          </div>
+        )}
+
         {/* Componente del Historial de Reservas */}
         <MisReservas
-          reservas={listaReservas}
+          reservas={misReservas}
           usuarioActual={usuarioActual}
-          onCancelarReserva={async (id) => {
-            const res = await cancelarReserva(id);
-            if (!res.exito) {
-              alert(res.error);
-            }
-          }}
+          onCancelarReserva={handleCancelar}
         />
       </main>
     </div>

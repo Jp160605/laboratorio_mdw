@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Sala, Usuario } from '@/types';
 import PixelIcon from '@/components/PixelIcon';
 import PixelButton from '@/components/PixelButton';
@@ -12,7 +12,7 @@ interface ModalReservaProps {
   fecha: string;
   horaInicio: number;
   usuarioActual: Usuario | null;
-  onConfirmar: (sala: Sala, fecha: string, horaInicio: number, version: number) => void;
+  onConfirmar: (sala: Sala, fecha: string, horaInicio: number, version: number) => Promise<void> | void;
 }
 
 export default function ModalReserva({
@@ -24,6 +24,15 @@ export default function ModalReserva({
   usuarioActual,
   onConfirmar,
 }: ModalReservaProps) {
+  const [cargando, setCargando] = useState<boolean>(false);
+  const [errorLocal, setErrorLocal] = useState<string | null>(null);
+
+  // Reiniciar estado cada vez que se abra o cambie el bloque
+  useEffect(() => {
+    setErrorLocal(null);
+    setCargando(false);
+  }, [abierto, sala?.id, fecha, horaInicio]);
+
   if (!abierto || !sala) return null;
 
   const ahora = new Date();
@@ -42,11 +51,27 @@ export default function ModalReserva({
     horaFin < 10 ? '0' : ''
   }${horaFin}:00`;
 
+  const handleConfirmarClick = async () => {
+    if (esPasado) {
+      setErrorLocal('Este bloque horario ya concluyó. No es posible reservar.');
+      return;
+    }
+    setCargando(true);
+    setErrorLocal(null);
+    try {
+      await onConfirmar(sala, fecha, horaInicio, sala.version);
+    } catch (err: any) {
+      setErrorLocal(err.message || 'Error al procesar la reserva en la base de datos.');
+    } finally {
+      setCargando(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-none">
-      {/* Ventana Flotante Estilo Retro OS (Paleta Amarilla 200/400/600) */}
+      {/* Ventana Flotante Estilo Retro OS */}
       <div className="w-full max-w-md border-4 border-[#dd6902] bg-[#ffdf88] overflow-hidden text-[#073B4C] shadow-2xl animate-in fade-in zoom-in-95 duration-100">
-        {/* Cabecera de la Ventana en #ffb220 con borde #dd6902 */}
+        {/* Cabecera de la Ventana */}
         <div className="flex items-center justify-between border-b-[3px] border-[#dd6902] bg-[#ffb220] px-3.5 py-2.5">
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1.5 shrink-0">
@@ -60,12 +85,6 @@ export default function ModalReserva({
           </div>
 
           <div className="flex items-center gap-1">
-            <span className="w-4 h-4 flex items-center justify-center border-2 border-[#dd6902] bg-[#ffdf88] text-[#073B4C] text-[10px] leading-none select-none">
-              _
-            </span>
-            <span className="w-4 h-4 flex items-center justify-center border-2 border-[#dd6902] bg-[#ffdf88] text-[#073B4C] text-[9px] leading-none select-none">
-              □
-            </span>
             <button
               type="button"
               onClick={onCerrar}
@@ -139,7 +158,21 @@ export default function ModalReserva({
             </div>
           </div>
 
-          {/* Alerta si el bloque ya concluyó */}
+          {/* Estado de Error del Servidor o de Bloqueo */}
+          {errorLocal && (
+            <div className="border-2 border-[#e11d48] bg-[#fecdd3] p-3 text-[11px] font-body text-[#073B4C] animate-in fade-in">
+              <div className="flex items-center gap-1.5 font-pixel text-xs font-bold text-[#e11d48] mb-1">
+                <PixelIcon name="alert" size={14} color="#e11d48" />
+                <span>ERROR DE TRANSACCIÓN:</span>
+              </div>
+              <p className="font-bold text-[#073B4C]">{errorLocal}</p>
+              <p className="text-[10px] text-[#073B4C]/80 mt-1">
+                La base de datos rechazó la solicitud. Ninguna reserva fue creada.
+              </p>
+            </div>
+          )}
+
+          {/* Alerta de Horario Concluido */}
           {esPasado ? (
             <div className="border-2 border-[#e11d48] bg-[#fecdd3] p-3 text-[11px] font-body text-[#073B4C]">
               <strong className="font-pixel text-xs uppercase block text-[#e11d48] mb-0.5">
@@ -166,15 +199,24 @@ export default function ModalReserva({
           >
             Cancelar
           </button>
-          {!esPasado && (
+          {esPasado ? (
+            <button
+              type="button"
+              disabled
+              className="border-2 border-gray-400 bg-gray-300 text-gray-500 px-4 py-2 font-pixel text-xs font-bold uppercase cursor-not-allowed opacity-60"
+            >
+              Horario No Disponible
+            </button>
+          ) : (
             <PixelButton
               type="button"
               variant="success"
               size="md"
-              onClick={() => onConfirmar(sala, fecha, horaInicio, sala.version)}
+              disabled={cargando}
+              onClick={handleConfirmarClick}
               icon={<PixelIcon name="check" size={16} />}
             >
-              Confirmar Reserva
+              {cargando ? 'Verificando ACID...' : 'Confirmar Reserva'}
             </PixelButton>
           )}
         </div>

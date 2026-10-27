@@ -14,8 +14,3 @@ INSERT INTO salas (nombre, capacidad, ubicacion, version) VALUES
 ('Lab de Cómputo A', 25, 'Edificio A - Piso 2', 1),
 ('Sala de Estudio Grupal 1', 10, 'Biblioteca - PB', 1),
 ('Cabina de Proyectos', 4, 'Biblioteca - Piso 1', 1);
-
--- Reservas de muestra confirmadas para el día de hoy
-INSERT INTO reservas (sala_id, usuario_id, fecha, hora_inicio, hora_fin, estado, version_sala_aplicada) VALUES
-(1, 1, CURRENT_DATE, 9, 10, 'CONFIRMADA', 1),
-(2, 2, CURRENT_DATE, 11, 12, 'CONFIRMADA', 1);

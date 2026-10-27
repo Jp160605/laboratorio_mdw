@@ -48,8 +48,12 @@ export default function MisReservas({
       return { puede: false, motivo: 'La reserva ya se encuentra cancelada.' };
     }
 
+    const fechaStr = typeof reserva.fecha === 'string' && reserva.fecha.includes('T')
+      ? reserva.fecha.split('T')[0]
+      : String(reserva.fecha);
+
     const fechaHoraInicio = new Date(
-      `${reserva.fecha}T${reserva.hora_inicio < 10 ? '0' : ''}${reserva.hora_inicio}:00:00`
+      `${fechaStr}T${reserva.hora_inicio < 10 ? '0' : ''}${reserva.hora_inicio}:00:00`
     );
     const ahora = new Date();
     const diferenciaMs = fechaHoraInicio.getTime() - ahora.getTime();
@@ -86,6 +90,11 @@ export default function MisReservas({
             <PixelBadge variant="green" withDot>
               {confirmadasCount} ACTIVAS
             </PixelBadge>
+            {canceladasCount > 0 && (
+              <PixelBadge variant="pink">
+                {canceladasCount} CANCELADAS
+              </PixelBadge>
+            )}
           </div>
         </div>
       </RetroWindow>
@@ -116,7 +125,7 @@ export default function MisReservas({
                   detailBox: 'border-2 border-[#0284c7] bg-[#38bdf8]/30',
                 }
               : {
-                  wrapper: 'border-4 border-[#e11d48] bg-[#fecdd3] opacity-85',
+                  wrapper: 'border-4 border-[#e11d48] bg-[#fecdd3]',
                   header: 'bg-[#fb7185] border-b-[3px] border-[#e11d48]',
                   dotBorder: 'border-[#e11d48]',
                   badge: 'border border-[#e11d48] bg-[#fecdd3] text-[#073B4C]',
@@ -166,7 +175,7 @@ export default function MisReservas({
                   <div className={`p-2.5 flex flex-wrap items-center gap-3 font-body text-xs text-[#073B4C] ${theme.detailBox}`}>
                     <span className="flex items-center gap-1 font-pixel font-bold">
                       <PixelIcon name="calendar" size={13} className="text-[#0284c7]" />
-                      {reserva.fecha}
+                      {typeof reserva.fecha === 'string' && reserva.fecha.includes('T') ? reserva.fecha.split('T')[0] : reserva.fecha}
                     </span>
                     <span>{'//'}</span>
                     <span className="flex items-center gap-1 font-pixel font-bold">
@@ -183,7 +192,7 @@ export default function MisReservas({
                   </div>
 
                   {/* Acciones */}
-                  {esActiva && (
+                  {esActiva ? (
                     <div className="border-t-2 border-[#0284c7]/30 pt-3">
                       <PixelButton
                         type="button"
@@ -203,6 +212,21 @@ export default function MisReservas({
                           {cancelacion.motivo}
                         </p>
                       )}
+                    </div>
+                  ) : (
+                    <div className="border-t-2 border-[#e11d48]/30 pt-3 space-y-1.5">
+                      <div className="border-2 border-[#e11d48] bg-[#fff1f2] p-2.5 font-pixel text-xs font-bold text-[#e11d48] flex items-center justify-between">
+                        <span className="flex items-center gap-1.5">
+                          <PixelIcon name="close" size={14} color="#e11d48" />
+                          <span>RESERVA CANCELADA</span>
+                        </span>
+                        <span className="text-[10px] bg-[#fb7185] text-white px-1.5 py-0.5 border border-[#e11d48]">
+                          ESPACIO LIBERADO
+                        </span>
+                      </div>
+                      <p className="font-body text-[11px] text-[#073B4C]/75">
+                        Esta reserva fue cancelada en PostgreSQL y eliminada de las colas de recordatorios de BullMQ.
+                      </p>
                     </div>
                   )}
                 </div>
