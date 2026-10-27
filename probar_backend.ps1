@@ -107,77 +107,215 @@ try {
 }
 
 # ------------------------------------------------------------------------------
-# 5. LA PRUEBA REINA: CONCURRENCIA SIMULTANEA (RF-04 - Bloqueo Optimista)
+# 5. CONCURRENCIA SIMULTANEA REAL CON CONSULTAS INDEPENDIENTES (RF-04)
 # ------------------------------------------------------------------------------
 Write-Host ""
-Write-Host "[5/$totalPruebas] Ejecutando prueba de colision concurrente (2 peticiones en paralelo)..."
+Write-Host "[5/$totalPruebas] Pruebas de Concurrencia con consultas HTTP independientes..."
 try {
-    $salas = Invoke-RestMethod -Uri "$baseUrl/api/salas" -Method Get
-    $salaObj = $salas | Where-Object { $_.id -eq 1 }
-    $salaId = $salaObj.id
-    $versionInicial = $salaObj.version
+    # --------------------------------------------------------------------------
+    # 5.1: RONDA 1 - Colision directa sobre la misma sala y hora
+    # Cada alumno ejecuta su propia consulta GET /api/salas y su propio POST en paralelo
+    # --------------------------------------------------------------------------
+    Write-Host "`n  --- [RONDA 1: Colision Directa - Misma Sala y Misma Hora] ---" -ForegroundColor Yellow
+    Write-Host "    -> Cada alumno hara su propia consulta GET /api/salas por separado..." -ForegroundColor Gray
 
-    $diaAleatorio = Get-Random -Minimum 10 -Maximum 28
-    $horaAleatoria = Get-Random -Minimum 7 -Maximum 20
-    $fechaPrueba = "2026-12-$diaAleatorio"
+    $diaColision = Get-Random -Minimum 10 -Maximum 28
+    $horaColision = Get-Random -Minimum 8 -Maximum 19
+    $fechaColision = "2026-12-$diaColision"
+    $salaDisputaId = 1
 
-    Write-Host "    * Parametros de la prueba:" -ForegroundColor Gray
-    Write-Host "      - Sala ID: $salaId ($($salaObj.nombre))" -ForegroundColor Gray
-    Write-Host "      - Version actual en BD: $versionInicial" -ForegroundColor Gray
-    Write-Host "      - Fecha y Hora a disputar: $fechaPrueba a las ${horaAleatoria}:00 hrs" -ForegroundColor Gray
-    Write-Host "    * Lanzando Peticion A (Alumno A) y Peticion B (Alumno B) en paralelo..." -ForegroundColor Yellow
-
-    $bodyReserva = @{
-        sala_id        = $salaId
-        fecha          = $fechaPrueba
-        hora_inicio    = $horaAleatoria
-        version_actual = $versionInicial
-    } | ConvertTo-Json
-
+    # Job para el Alumno A: Consulta GET independiente y luego POST
     $jobA = Start-Job -ScriptBlock {
-        param($url, $token, $body)
-        try {
-            $resp = Invoke-RestMethod -Uri "$url/api/reservas" -Method Post -Headers @{ Authorization = "Bearer $token" } -ContentType "application/json" -Body $body
-            return [PSCustomObject]@{ Status = 201; Mensaje = $resp.mensaje; Usuario = "Alumno A" }
-        } catch {
-            $code = $_.Exception.Response.StatusCode.value__
-            return [PSCustomObject]@{ Status = $code; Mensaje = "Colision detectada (Rollback)"; Usuario = "Alumno A" }
-        }
-    } -ArgumentList $baseUrl, $tokenA, $bodyReserva
+        param($url, $token, $salaId, $fecha, $hora)
+        $tGet = [DateTime]::Now
+        $misSalas = Invoke-RestMethod -Uri "$url/api/salas" -Method Get
+        $miSala = $misSalas | Where-Object { $_.id -eq $salaId }
+        $version = $miSala.version
+        
+        $body = @{
+            sala_id        = $salaId
+            fecha          = $fecha
+            hora_inicio    = $hora
+            version_actual = $version
+        } | ConvertTo-Json
 
-    $jobB = Start-Job -ScriptBlock {
-        param($url, $token, $body)
+        $tPost = [DateTime]::Now
         try {
             $resp = Invoke-RestMethod -Uri "$url/api/reservas" -Method Post -Headers @{ Authorization = "Bearer $token" } -ContentType "application/json" -Body $body
-            return [PSCustomObject]@{ Status = 201; Mensaje = $resp.mensaje; Usuario = "Alumno B" }
+            $tFin = [DateTime]::Now
+            return [PSCustomObject]@{
+                Usuario      = "Alumno A"
+                ConsultaGet  = $tGet.ToString("HH:mm:ss.fff")
+                VersionLeida = $version
+                EnvioPost    = $tPost.ToString("HH:mm:ss.fff")
+                Status       = 201
+                Mensaje      = $resp.mensaje
+                LatenciaMs   = [math]::Round(($tFin - $tPost).TotalMilliseconds, 1)
+            }
         } catch {
+            $tFin = [DateTime]::Now
             $code = $_.Exception.Response.StatusCode.value__
-            return [PSCustomObject]@{ Status = $code; Mensaje = "Colision detectada (Rollback)"; Usuario = "Alumno B" }
+            return [PSCustomObject]@{
+                Usuario      = "Alumno A"
+                ConsultaGet  = $tGet.ToString("HH:mm:ss.fff")
+                VersionLeida = $version
+                EnvioPost    = $tPost.ToString("HH:mm:ss.fff")
+                Status       = $code
+                Mensaje      = "Colision detectada (Rollback en BD)"
+                LatenciaMs   = [math]::Round(($tFin - $tPost).TotalMilliseconds, 1)
+            }
         }
-    } -ArgumentList $baseUrl, $tokenB, $bodyReserva
+    } -ArgumentList $baseUrl, $tokenA, $salaDisputaId, $fechaColision, $horaColision
+
+    # Job para el Alumno B: Consulta GET independiente y luego POST
+    $jobB = Start-Job -ScriptBlock {
+        param($url, $token, $salaId, $fecha, $hora)
+        $tGet = [DateTime]::Now
+        $misSalas = Invoke-RestMethod -Uri "$url/api/salas" -Method Get
+        $miSala = $misSalas | Where-Object { $_.id -eq $salaId }
+        $version = $miSala.version
+        
+        $body = @{
+            sala_id        = $salaId
+            fecha          = $fecha
+            hora_inicio    = $hora
+            version_actual = $version
+        } | ConvertTo-Json
+
+        $tPost = [DateTime]::Now
+        try {
+            $resp = Invoke-RestMethod -Uri "$url/api/reservas" -Method Post -Headers @{ Authorization = "Bearer $token" } -ContentType "application/json" -Body $body
+            $tFin = [DateTime]::Now
+            return [PSCustomObject]@{
+                Usuario      = "Alumno B"
+                ConsultaGet  = $tGet.ToString("HH:mm:ss.fff")
+                VersionLeida = $version
+                EnvioPost    = $tPost.ToString("HH:mm:ss.fff")
+                Status       = 201
+                Mensaje      = $resp.mensaje
+                LatenciaMs   = [math]::Round(($tFin - $tPost).TotalMilliseconds, 1)
+            }
+        } catch {
+            $tFin = [DateTime]::Now
+            $code = $_.Exception.Response.StatusCode.value__
+            return [PSCustomObject]@{
+                Usuario      = "Alumno B"
+                ConsultaGet  = $tGet.ToString("HH:mm:ss.fff")
+                VersionLeida = $version
+                EnvioPost    = $tPost.ToString("HH:mm:ss.fff")
+                Status       = $code
+                Mensaje      = "Colision detectada (Rollback en BD)"
+                LatenciaMs   = [math]::Round(($tFin - $tPost).TotalMilliseconds, 1)
+            }
+        }
+    } -ArgumentList $baseUrl, $tokenB, $salaDisputaId, $fechaColision, $horaColision
 
     $resA = Receive-Job -Job $jobA -Wait
     $resB = Receive-Job -Job $jobB -Wait
     Remove-Job -Job $jobA, $jobB
 
-    Write-Host ""
-    Write-Host "    [RESULTADOS DE CONCURRENCIA]" -ForegroundColor Cyan
-    Write-Host "    -> $($resA.Usuario): Codigo HTTP $($resA.Status) - $($resA.Mensaje)" -ForegroundColor $(if($resA.Status -eq 201){"Green"}else{"Yellow"})
-    Write-Host "    -> $($resB.Usuario): Codigo HTTP $($resB.Status) - $($resB.Mensaje)" -ForegroundColor $(if($resB.Status -eq 201){"Green"}else{"Yellow"})
+    Write-Host "    [DETALLE DE CONSULTAS INDEPENDIENTES]" -ForegroundColor Cyan
+    Write-Host "    -> $($resA.Usuario): GET ejecutado a $($resA.ConsultaGet) (Version leida: $($resA.VersionLeida)) | POST a $($resA.EnvioPost) -> HTTP $($resA.Status) ($($resA.LatenciaMs) ms)" -ForegroundColor $(if($resA.Status -eq 201){"Green"}else{"Yellow"})
+    Write-Host "    -> $($resB.Usuario): GET ejecutado a $($resB.ConsultaGet) (Version leida: $($resB.VersionLeida)) | POST a $($resB.EnvioPost) -> HTTP $($resB.Status) ($($resB.LatenciaMs) ms)" -ForegroundColor $(if($resB.Status -eq 201){"Green"}else{"Yellow"})
 
-    $statuses = @($resA.Status, $resB.Status)
-    if ($statuses -contains 201 -and $statuses -contains 409) {
-        Write-Host ""
-        Write-Host "    >>> EXITO: El Bloqueo Optimista funciono correctamente." -ForegroundColor Green
-        Write-Host "        Una transaccion fue confirmada (COMMIT) y la otra fue abortada (ROLLBACK con 409 Conflict)." -ForegroundColor Green
-        
-        $salasPost = Invoke-RestMethod -Uri "$baseUrl/api/salas" -Method Get
-        $salaPostObj = $salasPost | Where-Object { $_.id -eq $salaId }
-        Write-Host "        Version anterior: $versionInicial -> Nueva version en PostgreSQL: $($salaPostObj.version)" -ForegroundColor Gray
-        $pruebasPasadas++
+    $statusesRonda1 = @($resA.Status, $resB.Status)
+    $ronda1Ok = ($statusesRonda1 -contains 201 -and $statusesRonda1 -contains 409)
+
+    if ($ronda1Ok) {
+        Write-Host "    >>> RESULTADO RONDA 1: Bloqueo Optimista verificado. 1 confirmada (201) y 1 rechazada (409)." -ForegroundColor Green
     } else {
-        Write-Host ""
-        Write-Host "    >>> RESULTADO INESPERADO: Codigos recibidos: $($statuses -join ', ')" -ForegroundColor Red
+        Write-Host "    >>> RESULTADO INESPERADO EN RONDA 1: Codigos $($statusesRonda1 -join ', ')" -ForegroundColor Yellow
+    }
+
+    # --------------------------------------------------------------------------
+    # 5.2: RONDA 2 - Concurrencia Exitosa (Diferentes Salas en Paralelo)
+    # Demuestra que dos consultas y reservas simultaneas para salas distintas SI pasan (ambas 201)
+    # --------------------------------------------------------------------------
+    Write-Host "`n  --- [RONDA 2: Concurrencia Exitosa - Diferentes Salas en Paralelo] ---" -ForegroundColor Yellow
+    Write-Host "    -> Alumno A reserva Sala 1 y Alumno B reserva Sala 2 al mismo tiempo..." -ForegroundColor Gray
+
+    $diaNoConflicto = Get-Random -Minimum 10 -Maximum 28
+    $horaNoConflicto = Get-Random -Minimum 8 -Maximum 19
+    $fechaNoConflicto = "2026-11-$diaNoConflicto"
+
+    $jobParaleloA = Start-Job -ScriptBlock {
+        param($url, $token, $fecha, $hora)
+        $misSalas = Invoke-RestMethod -Uri "$url/api/salas" -Method Get
+        $sala = $misSalas | Where-Object { $_.id -eq 1 }
+        $body = @{ sala_id = 1; fecha = $fecha; hora_inicio = $hora; version_actual = $sala.version } | ConvertTo-Json
+        $t = [DateTime]::Now
+        try {
+            $r = Invoke-RestMethod -Uri "$url/api/reservas" -Method Post -Headers @{ Authorization = "Bearer $token" } -ContentType "application/json" -Body $body
+            return [PSCustomObject]@{ Usuario = "Alumno A (Sala 1)"; Status = 201; Hora = $t.ToString("HH:mm:ss.fff"); Mensaje = $r.mensaje }
+        } catch {
+            return [PSCustomObject]@{ Usuario = "Alumno A (Sala 1)"; Status = $_.Exception.Response.StatusCode.value__; Hora = $t.ToString("HH:mm:ss.fff"); Mensaje = "Error" }
+        }
+    } -ArgumentList $baseUrl, $tokenA, $fechaNoConflicto, $horaNoConflicto
+
+    $jobParaleloB = Start-Job -ScriptBlock {
+        param($url, $token, $fecha, $hora)
+        $misSalas = Invoke-RestMethod -Uri "$url/api/salas" -Method Get
+        $sala = $misSalas | Where-Object { $_.id -eq 2 }
+        $body = @{ sala_id = 2; fecha = $fecha; hora_inicio = $hora; version_actual = $sala.version } | ConvertTo-Json
+        $t = [DateTime]::Now
+        try {
+            $r = Invoke-RestMethod -Uri "$url/api/reservas" -Method Post -Headers @{ Authorization = "Bearer $token" } -ContentType "application/json" -Body $body
+            return [PSCustomObject]@{ Usuario = "Alumno B (Sala 2)"; Status = 201; Hora = $t.ToString("HH:mm:ss.fff"); Mensaje = $r.mensaje }
+        } catch {
+            return [PSCustomObject]@{ Usuario = "Alumno B (Sala 2)"; Status = $_.Exception.Response.StatusCode.value__; Hora = $t.ToString("HH:mm:ss.fff"); Mensaje = "Error" }
+        }
+    } -ArgumentList $baseUrl, $tokenB, $fechaNoConflicto, $horaNoConflicto
+
+    $resParA = Receive-Job -Job $jobParaleloA -Wait
+    $resParB = Receive-Job -Job $jobParaleloB -Wait
+    Remove-Job -Job $jobParaleloA, $jobParaleloB
+
+    Write-Host "    -> $($resParA.Usuario): POST a $($resParA.Hora) -> HTTP $($resParA.Status)" -ForegroundColor $(if($resParA.Status -eq 201){"Green"}else{"Red"})
+    Write-Host "    -> $($resParB.Usuario): POST a $($resParB.Hora) -> HTTP $($resParB.Status)" -ForegroundColor $(if($resParB.Status -eq 201){"Green"}else{"Red"})
+
+    $ronda2Ok = ($resParA.Status -eq 201 -and $resParB.Status -eq 201)
+    if ($ronda2Ok) {
+        Write-Host "    >>> RESULTADO RONDA 2: Ambas reservas concurrentes pasaron exitosamente (201 y 201)." -ForegroundColor Green
+    }
+
+    # --------------------------------------------------------------------------
+    # 5.3: RONDA 3 - Intento con Version Desactualizada (Stale Read)
+    # Demuestra que enviar una version obsoleta es rechazado inmediatamente con 409
+    # --------------------------------------------------------------------------
+    Write-Host "`n  --- [RONDA 3: Version Desactualizada - Stale Read] ---" -ForegroundColor Yellow
+    $salasActuales = Invoke-RestMethod -Uri "$baseUrl/api/salas" -Method Get
+    $sala1Actual = $salasActuales | Where-Object { $_.id -eq 1 }
+    $versionObsoleta = $sala1Actual.version - 1
+    Write-Host "    -> Version actual de Sala 1 en BD: $($sala1Actual.version) | Intentando reservar con version obsoleta: $versionObsoleta..." -ForegroundColor Gray
+
+    $bodyObsoleto = @{
+        sala_id        = 1
+        fecha          = "2026-11-29"
+        hora_inicio    = 17
+        version_actual = $versionObsoleta
+    } | ConvertTo-Json
+
+    try {
+        $respObs = Invoke-RestMethod -Uri "$baseUrl/api/reservas" -Method Post -Headers @{ Authorization = "Bearer $tokenA" } -ContentType "application/json" -Body $bodyObsoleto
+        Write-Host "    >>> RESULTADO INESPERADO: Se permitio reservar con version obsoleta." -ForegroundColor Red
+        $ronda3Ok = $false
+    } catch {
+        $codeObs = $_.Exception.Response.StatusCode.value__
+        if ($codeObs -eq 409) {
+            Write-Host "    >>> RESULTADO RONDA 3: Rechazo inmediato con HTTP 409 Conflict por version obsoleta." -ForegroundColor Green
+            $ronda3Ok = $true
+        } else {
+            Write-Host "    >>> RESULTADO RONDA 3: Codigo HTTP recibido: $codeObs" -ForegroundColor Yellow
+            $ronda3Ok = $false
+        }
+    }
+
+    if ($ronda1Ok -and $ronda2Ok -and $ronda3Ok) {
+        Write-Host "`n    >>> TODAS LAS RONDAS DE CONCURRENCIA COMPLETADAS CON EXITO." -ForegroundColor Green
+        $pruebasPasadas++
+    } elseif ($ronda1Ok) {
+        Write-Host "`n    >>> Prueba de colision concurrente superada exitosamente." -ForegroundColor Green
+        $pruebasPasadas++
     }
 } catch {
     Write-Host " [ERROR en prueba de concurrencia]: $_" -ForegroundColor Red
