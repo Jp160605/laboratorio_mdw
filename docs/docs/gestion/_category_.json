@@ -1,0 +1,8 @@
+{
+  "label": "👥 Gestión y Responsables",
+  "position": 7,
+  "link": {
+    "type": "generated-index",
+    "description": "Asignación de roles, tareas y matriz RACI del proyecto."
+  }
+}

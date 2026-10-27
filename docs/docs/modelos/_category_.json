@@ -1,0 +1,8 @@
+{
+  "label": "📐 Modelos de Diseño (Mermaid)",
+  "position": 2,
+  "link": {
+    "type": "generated-index",
+    "description": "Diagramas formales del sistema elaborados en Mermaid: Casos de uso, Navegación, Interacción, Secuencia y Entidad-Relación."
+  }
+}

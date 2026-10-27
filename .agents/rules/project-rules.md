@@ -16,3 +16,6 @@
 - Centralizar el manejo de errores en Express mediante middlewares dedicados.
 - Aislar las variables de entorno utilizando archivos `.env` y documentar variables requeridas en `.env.example`.
 - Asegurar que toda transacción en base de datos use bloques `try/catch` con liberación explícita del cliente del pool (`client.release()`) en el bloque `finally`.
+
+## 3. Control de Versiones (Git)
+- **NO realizar `git commit` ni `git push` de forma autónoma**: Solo ejecutar commits o push cuando el usuario lo solicite de manera explícita en su mensaje. Si hay cambios pendientes, proporcionar los comandos de Git o el estado para que el usuario decida o los ejecute en su terminal.

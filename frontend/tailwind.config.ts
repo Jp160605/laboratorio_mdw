@@ -17,8 +17,8 @@ const config: Config = {
         'neo-green': '#06D6A0',
       },
       fontFamily: {
-        pixel: ['var(--font-pixel)', 'monospace'],
-        body: ['var(--font-body)', 'monospace', 'sans-serif'],
+        pixel: ['var(--font-pixel)', 'DotGothic16', 'monospace'],
+        body: ['var(--font-body)', 'VT323', 'monospace', 'sans-serif'],
       },
       boxShadow: {
         'neo-sm': 'none',
