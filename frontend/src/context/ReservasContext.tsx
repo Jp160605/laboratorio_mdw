@@ -1,6 +1,7 @@
 'use client';
 
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { io } from 'socket.io-client';
 import { Sala, Reserva, Usuario, ResultadoConcurrencia, NotificacionBullMQ } from '@/types';
 import {
   apiLogin,
@@ -10,11 +11,15 @@ import {
   apiSimularColisionConcurrente,
   apiCrearSala,
   apiEliminarSala,
+  apiObtenerMisReservas,
+  apiObtenerTodasReservas,
 } from '@/services/api';
 
 interface ReservasContextType {
   salas: Sala[];
   reservas: Reserva[];
+  misReservas: Reserva[];
+  todasReservas: Reserva[];
   usuarioActual: Usuario | null;
   setUsuarioActual: (usuario: Usuario | null) => void;
   notificaciones: NotificacionBullMQ[];
@@ -39,6 +44,8 @@ interface ReservasContextType {
   origenDisponibilidad: 'POSTGRES_DB' | 'REDIS_CACHE' | null;
   cargandoDisponibilidad: boolean;
   cargarDisponibilidad: (fecha?: string) => Promise<void>;
+  cargarMisReservas: () => Promise<void>;
+  cargarTodasReservas: () => Promise<void>;
 }
 
 const ReservasContext = createContext<ReservasContextType | undefined>(undefined);
@@ -68,11 +75,11 @@ export function ReservasProvider({ children }: { children: React.ReactNode }) {
     rol: 'ALUMNO',
   });
 
-  const [wsConectado, setWsConectado] = useState<boolean>(true);
+  const [wsConectado, setWsConectado] = useState<boolean>(false);
   const [origenDisponibilidad, setOrigenDisponibilidad] = useState<'POSTGRES_DB' | 'REDIS_CACHE' | null>(null);
   const [cargandoDisponibilidad, setCargandoDisponibilidad] = useState<boolean>(false);
 
-  // Semilla de EXACTAMENTE 3 SALAS como solicitó el usuario
+  // Semilla de EXACTAMENTE 3 SALAS
   const [salas, setSalas] = useState<Sala[]>([
     { id: 1, nombre: 'Lab de Cómputo A', capacidad: 25, ubicacion: 'Edificio A - Piso 2', version: 1 },
     { id: 2, nombre: 'Sala de Estudio Grupal 1', capacidad: 10, ubicacion: 'Biblioteca - PB', version: 1 },
@@ -80,6 +87,8 @@ export function ReservasProvider({ children }: { children: React.ReactNode }) {
   ]);
 
   const [reservas, setReservas] = useState<Reserva[]>([]);
+  const [misReservas, setMisReservas] = useState<Reserva[]>([]);
+  const [todasReservas, setTodasReservas] = useState<Reserva[]>([]);
   const [notificaciones, setNotificaciones] = useState<NotificacionBullMQ[]>([]);
 
   // 1. Cargar Salas y Disponibilidad Real desde PostgreSQL / Redis (GET)
@@ -92,7 +101,6 @@ export function ReservasProvider({ children }: { children: React.ReactNode }) {
           setSalas(data.salas);
         }
         if (data.reservas) {
-          // Normalizar formato de fecha si viene en ISO string
           const reservasNormalizadas = data.reservas.map((r: any) => ({
             ...r,
             fecha: typeof r.fecha === 'string' && r.fecha.includes('T') ? r.fecha.split('T')[0] : r.fecha,
@@ -100,10 +108,8 @@ export function ReservasProvider({ children }: { children: React.ReactNode }) {
           setReservas(reservasNormalizadas);
         }
         setOrigenDisponibilidad(data.origen as 'POSTGRES_DB' | 'REDIS_CACHE');
-        setWsConectado(true);
       } catch (error) {
-        console.warn('[ReservasContext] Backend no disponible o error al cargar:', error);
-        setWsConectado(false);
+        console.warn('[ReservasContext] Backend no disponible al cargar disponibilidad:', error);
       } finally {
         setCargandoDisponibilidad(false);
       }
@@ -111,10 +117,78 @@ export function ReservasProvider({ children }: { children: React.ReactNode }) {
     [hoyStr]
   );
 
-  // Carga inicial al montar el provider
+  // 2. Cargar Historial Completo del Usuario (RF-07)
+  const cargarMisReservas = useCallback(async () => {
+    if (!usuarioActual) return;
+    try {
+      const token = await resolverTokenUsuario(usuarioActual.email);
+      const data = await apiObtenerMisReservas(token);
+      if (Array.isArray(data)) {
+        const misReservasNormalizadas = data.map((r: any) => ({
+          ...r,
+          fecha: typeof r.fecha === 'string' && r.fecha.includes('T') ? r.fecha.split('T')[0] : r.fecha,
+        }));
+        setMisReservas(misReservasNormalizadas);
+      }
+    } catch (err) {
+      console.warn('[ReservasContext] Error al cargar mis reservas:', err);
+    }
+  }, [usuarioActual]);
+
+  // 3. Cargar Auditoría Completa del Sistema para el Panel de Admin
+  const cargarTodasReservas = useCallback(async () => {
+    try {
+      const data = await apiObtenerTodasReservas();
+      if (Array.isArray(data)) {
+        const todasNormalizadas = data.map((r: any) => ({
+          ...r,
+          fecha: typeof r.fecha === 'string' && r.fecha.includes('T') ? r.fecha.split('T')[0] : r.fecha,
+        }));
+        setTodasReservas(todasNormalizadas);
+      }
+    } catch (err) {
+      console.warn('[ReservasContext] Error al cargar todas las reservas:', err);
+    }
+  }, []);
+
+  // Carga inicial y recarga al cambiar de usuario
   useEffect(() => {
     cargarDisponibilidad(hoyStr);
-  }, [cargarDisponibilidad, hoyStr]);
+    cargarMisReservas();
+    cargarTodasReservas();
+  }, [cargarDisponibilidad, cargarMisReservas, cargarTodasReservas, hoyStr, usuarioActual]);
+
+  // 4. Conexión Real a WebSockets con Socket.io (Tiempo Real)
+  useEffect(() => {
+    const socketUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000';
+    const socket = io(socketUrl, {
+      transports: ['websocket', 'polling'],
+      reconnectionAttempts: 5,
+      reconnectionDelay: 1000,
+    });
+
+    socket.on('connect', () => {
+      console.log('[Socket.io] Conexión establecida con el backend:', socket.id);
+      setWsConectado(true);
+    });
+
+    socket.on('disconnect', () => {
+      console.warn('[Socket.io] Conexión cerrada con el servidor.');
+      setWsConectado(false);
+    });
+
+    // Escucha eventos globales para actualizar en tiempo real sin recargar página
+    socket.on('calendario_actualizado', () => {
+      console.log('[Socket.io] Evento calendario_actualizado recibido');
+      cargarDisponibilidad();
+      cargarMisReservas();
+      cargarTodasReservas();
+    });
+
+    return () => {
+      socket.disconnect();
+    };
+  }, [cargarDisponibilidad, cargarMisReservas, cargarTodasReservas]);
 
   const eliminarNotificacion = (id: string) => {
     setNotificaciones((prev) => prev.filter((n) => n.id !== id));
@@ -124,7 +198,7 @@ export function ReservasProvider({ children }: { children: React.ReactNode }) {
     setNotificaciones([]);
   };
 
-  // 2. Confirmar reserva con API real, Bloqueo Optimista y colas BullMQ (POST)
+  // 5. Confirmar reserva con API real, Bloqueo Optimista y colas BullMQ (POST)
   const confirmarReserva = async (
     sala: Sala,
     fecha: string,
@@ -148,7 +222,6 @@ export function ReservasProvider({ children }: { children: React.ReactNode }) {
       );
 
       if (!res.ok) {
-        // En caso de conflicto 409 o error, refrescar salas para mostrar la versión actualizada
         await cargarDisponibilidad(fecha);
         return {
           exito: false,
@@ -158,7 +231,7 @@ export function ReservasProvider({ children }: { children: React.ReactNode }) {
         };
       }
 
-      // Reserva creada con éxito (HTTP 201)
+      // Reserva confirmada exitosamente (HTTP 201)
       const nuevaReserva = res.data.reserva as Reserva;
       const nuevaVersion = res.data.nueva_version_sala || versionEnviada + 1;
 
@@ -167,15 +240,15 @@ export function ReservasProvider({ children }: { children: React.ReactNode }) {
         prev.map((s) => (s.id === sala.id ? { ...s, version: nuevaVersion } : s))
       );
       if (nuevaReserva) {
-        setReservas((prev) => [
-          ...prev,
-          {
-            ...nuevaReserva,
-            sala_nombre: sala.nombre,
-            usuario_nombre: usuarioActual.nombre,
-            fecha: typeof nuevaReserva.fecha === 'string' && nuevaReserva.fecha.includes('T') ? nuevaReserva.fecha.split('T')[0] : nuevaReserva.fecha,
-          },
-        ]);
+        const itemReserva = {
+          ...nuevaReserva,
+          sala_nombre: sala.nombre,
+          usuario_nombre: usuarioActual.nombre,
+          fecha: typeof nuevaReserva.fecha === 'string' && nuevaReserva.fecha.includes('T') ? nuevaReserva.fecha.split('T')[0] : nuevaReserva.fecha,
+        };
+        setReservas((prev) => [...prev, itemReserva]);
+        setMisReservas((prev) => [itemReserva, ...prev]);
+        setTodasReservas((prev) => [itemReserva, ...prev]);
       }
 
       // Notificaciones reales de BullMQ procesadas en segundo plano
@@ -212,7 +285,7 @@ export function ReservasProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // 3. Cancelar reserva con regla de 2 horas (PATCH)
+  // 6. Cancelar reserva con regla de 2 horas (PATCH)
   const cancelarReserva = async (reservaId: number): Promise<{ exito: boolean; error?: string }> => {
     try {
       const token = usuarioActual ? await resolverTokenUsuario(usuarioActual.email) : undefined;
@@ -221,8 +294,14 @@ export function ReservasProvider({ children }: { children: React.ReactNode }) {
       setReservas((prev) =>
         prev.map((r) => (r.id === reservaId ? { ...r, estado: 'CANCELADA' } : r))
       );
+      setMisReservas((prev) =>
+        prev.map((r) => (r.id === reservaId ? { ...r, estado: 'CANCELADA' } : r))
+      );
+      setTodasReservas((prev) =>
+        prev.map((r) => (r.id === reservaId ? { ...r, estado: 'CANCELADA' } : r))
+      );
 
-      const r = reservas.find((res) => res.id === reservaId);
+      const r = misReservas.find((res) => res.id === reservaId) || reservas.find((res) => res.id === reservaId);
       if (r && usuarioActual) {
         const notifCancel: NotificacionBullMQ = {
           id: `job-canc-${Date.now()}`,
@@ -245,7 +324,7 @@ export function ReservasProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // 4. Funciones de Administrador (Crear, Actualizar, Eliminar Salas en BD)
+  // 7. Funciones de Administrador (Crear, Actualizar, Eliminar Salas en BD)
   const crearSala = async (nueva: Omit<Sala, 'id' | 'version'>) => {
     try {
       const token = usuarioActual ? await resolverTokenUsuario(usuarioActual.email) : undefined;
@@ -279,7 +358,7 @@ export function ReservasProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // 5. Simulación Real de Concurrencia con Promise.all (Demo Académica contra Backend)
+  // 8. Simulación Real de Concurrencia con Promise.all (Demo Académica contra Backend)
   const ejecutarColisionConcurrencia = async (
     salaId: number,
     hora: number,
@@ -306,14 +385,12 @@ export function ReservasProvider({ children }: { children: React.ReactNode }) {
         setSalas((prev) =>
           prev.map((s) => (s.id === salaId ? { ...s, version: s.version + 1 } : s))
         );
-        // Refrescar disponibilidad
         await cargarDisponibilidad(fechaSimulacion);
       }
 
       return resultados;
     } catch (err: any) {
       console.warn('[ejecutarColisionConcurrencia] Fallback simulado:', err);
-      // Fallback seguro si el backend no está disponible
       await new Promise((resolve) => setTimeout(resolve, 600));
       const resA: ResultadoConcurrencia = {
         usuario: 'Petición 1 (Alumno A)',
@@ -343,6 +420,8 @@ export function ReservasProvider({ children }: { children: React.ReactNode }) {
       value={{
         salas,
         reservas,
+        misReservas,
+        todasReservas,
         usuarioActual,
         setUsuarioActual,
         notificaciones,
@@ -358,6 +437,8 @@ export function ReservasProvider({ children }: { children: React.ReactNode }) {
         origenDisponibilidad,
         cargandoDisponibilidad,
         cargarDisponibilidad,
+        cargarMisReservas,
+        cargarTodasReservas,
       }}
     >
       {children}

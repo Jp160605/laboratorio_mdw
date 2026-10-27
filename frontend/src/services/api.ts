@@ -116,6 +116,18 @@ export async function apiObtenerMisReservas(token?: string): Promise<Reserva[]> 
   return data;
 }
 
+// 6b. Auditoría Total de Reservas (Panel de Administración)
+export async function apiObtenerTodasReservas(): Promise<Reserva[]> {
+  const res = await fetch(`${API_BASE_URL}/api/reservas/todas`, {
+    method: 'GET',
+    headers: getHeaders(),
+    cache: 'no-store',
+  });
+  const data = await res.json();
+  if (!res.ok) throw new Error(data.error || 'Error al obtener auditoría de reservas');
+  return data;
+}
+
 // 7. Simulación Real de Concurrencia con Promise.all (Demo Académica)
 export async function apiSimularColisionConcurrente(
   salaId: number,

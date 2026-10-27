@@ -244,3 +244,22 @@ export async function obtenerMisReservas(req: AuthRequest, res: Response): Promi
     res.status(500).json({ error: 'Error al obtener tus reservas.' });
   }
 }
+
+export async function obtenerTodasReservas(_req: any, res: Response): Promise<void> {
+  try {
+    const resultado = await pool.query(
+      `SELECT r.id, r.sala_id, s.nombre AS sala_nombre, s.ubicacion AS sala_ubicacion, 
+              r.usuario_id, u.nombre AS usuario_nombre, u.email AS usuario_email,
+              r.fecha, r.hora_inicio, r.hora_fin, r.estado, 
+              r.version_sala_aplicada, r.creado_en
+       FROM reservas r
+       JOIN salas s ON s.id = r.sala_id
+       JOIN usuarios u ON u.id = r.usuario_id
+       ORDER BY r.fecha DESC, r.hora_inicio DESC, r.id DESC`
+    );
+    res.status(200).json(resultado.rows);
+  } catch (error: any) {
+    console.error('[Reservas Controller - Todas]:', error);
+    res.status(500).json({ error: 'Error al obtener la auditoría de reservas.' });
+  }
+}

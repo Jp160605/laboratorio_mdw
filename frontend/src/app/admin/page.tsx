@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import PixelIcon from '@/components/PixelIcon';
 import PixelButton from '@/components/PixelButton';
@@ -18,6 +18,8 @@ export default function AdminPage() {
     eliminarSala,
     notificaciones,
     limpiarNotificaciones,
+    todasReservas,
+    cargarTodasReservas,
   } = useReservas();
 
   // Estados del formulario para crear nueva sala
@@ -28,6 +30,10 @@ export default function AdminPage() {
 
   // Filtro de auditoría
   const [filtroEstado, setFiltroEstado] = useState<'TODAS' | 'CONFIRMADA' | 'CANCELADA'>('TODAS');
+
+  useEffect(() => {
+    cargarTodasReservas();
+  }, [cargarTodasReservas]);
 
   const esAdmin = usuarioActual?.rol === 'ADMINISTRADOR';
 
@@ -43,7 +49,8 @@ export default function AdminPage() {
     setModalNuevaSala(false);
   };
 
-  const reservasFiltradas = reservas.filter((r) => {
+  const listaAuditoria = todasReservas && todasReservas.length > 0 ? todasReservas : reservas;
+  const reservasFiltradas = listaAuditoria.filter((r) => {
     if (filtroEstado === 'TODAS') return true;
     return r.estado === filtroEstado;
   });
@@ -112,9 +119,9 @@ export default function AdminPage() {
               {'//'} Reservas Totales
             </span>
             <div className="mt-2 flex items-baseline justify-between">
-              <span className="font-pixel text-3xl font-bold text-[#073B4C]">{reservas.length}</span>
+              <span className="font-pixel text-3xl font-bold text-[#073B4C]">{listaAuditoria.length}</span>
               <span className="font-pixel text-xs text-[#06D6A0] bg-[#073B4C] px-1.5 py-0.5 font-bold">
-                {reservas.filter((r) => r.estado === 'CONFIRMADA').length} ACTIVAS
+                {listaAuditoria.filter((r) => r.estado === 'CONFIRMADA').length} ACTIVAS
               </span>
             </div>
           </div>

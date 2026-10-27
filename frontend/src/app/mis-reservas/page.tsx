@@ -1,13 +1,19 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import MisReservas from '@/components/MisReservas';
 import PixelBadge from '@/components/PixelBadge';
 import { useReservas } from '@/context/ReservasContext';
 
 export default function MisReservasPage() {
-  const { reservas, usuarioActual, cancelarReserva } = useReservas();
+  const { reservas, misReservas, usuarioActual, cancelarReserva, cargarMisReservas } = useReservas();
+
+  useEffect(() => {
+    cargarMisReservas();
+  }, [cargarMisReservas, usuarioActual]);
+
+  const listaReservas = misReservas && misReservas.length > 0 ? misReservas : reservas;
 
   return (
     <div className="min-h-screen text-neo-dark flex flex-col">
@@ -37,7 +43,7 @@ export default function MisReservasPage() {
 
         {/* Componente del Historial de Reservas */}
         <MisReservas
-          reservas={reservas}
+          reservas={listaReservas}
           usuarioActual={usuarioActual}
           onCancelarReserva={async (id) => {
             const res = await cancelarReserva(id);
